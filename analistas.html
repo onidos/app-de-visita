@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visitas Unidas — Analistas</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <style>
+    body {
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 24px; }
+    .sidebar-logo img { height: 28px; }
+    .sidebar-logo span { font-family: var(--font-head); font-weight: 700; font-size: .92rem; color: var(--text); }
+    .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: .87rem; font-weight: 500; transition: var(--transition);
+    }
+    .nav-item i { font-size: 18px; }
+    .nav-item:hover { background: var(--brand-light); color: var(--brand); }
+    .nav-item.active { background: var(--brand-light); color: var(--brand); font-weight: 600; }
+    .nav-item.disabled { opacity: .4; pointer-events: none; }
+    .sidebar-footer {
+      padding: 14px 20px 0; margin: 12px 12px 0; border-top: 1.5px solid var(--border);
+      font-size: .82rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px;
+    }
+    .sidebar-footer a { color: var(--text-muted); text-decoration: none; font-weight: 600; }
+    .sidebar-footer a:hover { color: var(--danger); }
+
+    .content { flex: 1; min-width: 0; }
+    .page { width: 100%; max-width: 1080px; margin: 0 auto; padding: 32px 28px 60px; }
+
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 { font-family: var(--font-head); font-size: 1.5rem; color: var(--text); }
+    .page-header p { color: var(--text-muted); font-size: .9rem; margin-top: 4px; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .metric-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 20px; }
+    .metric-label { font-size: .78rem; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; }
+    .metric-value { font-family: var(--font-head); font-size: 1.7rem; font-weight: 700; color: var(--text); }
+    .metric-value.warn { color: var(--warn-text); }
+    .metric-value.danger { color: var(--danger); }
+    .metric-value.success { color: var(--success); }
+    .metric-sub { font-size: .78rem; color: var(--text-muted); margin-top: 4px; }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .chart-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .chart-card h2 {
+      font-family: var(--font-head);
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .chart-card p { font-size: .8rem; color: var(--text-muted); margin-bottom: 16px; }
+    .chart-wrap { position: relative; height: 260px; }
+
+    .section-title { font-family: var(--font-head); font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+
+    .table-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    table.oficinas { width: 100%; border-collapse: collapse; font-size: .87rem; }
+    table.oficinas th {
+      text-align: left; background: #fafbfd; color: var(--text-muted); font-weight: 600;
+      font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; padding: 12px 16px;
+      border-bottom: 1.5px solid var(--border);
+    }
+    table.oficinas td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); }
+    table.oficinas tr:last-child td { border-bottom: none; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: .76rem; font-weight: 600; }
+    .badge.ok { background: #eafaf1; color: var(--success); }
+    .badge.pendente { background: var(--warn-bg); color: var(--warn-text); }
+    .badge.atrasada { background: #fff4f4; color: var(--danger); }
+
+    .mini-bar { width: 100%; height: 6px; border-radius: 4px; background: var(--border); overflow: hidden; }
+    .mini-bar-fill { height: 100%; background: var(--brand); }
+
+    @media (max-width: 900px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .charts-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; align-items: center; padding: 12px; overflow-x: auto; }
+      .sidebar-logo { padding: 0 12px 0 0; }
+      .sidebar-nav { flex-direction: row; flex: none; }
+      .sidebar-footer { display: none; }
+    }
+    @media (max-width: 560px) {
+      .metrics { grid-template-columns: 1fr; }
+      .page { padding: 24px 16px 40px; }
+      table.oficinas { font-size: .8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <img src="imagens/logo.png" alt="Logo da Unidas">
+      <span>Visitas Unidas</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="painel-gerente.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Painel geral</a>
+      <a href="priorizacao.html" class="nav-item"><i class="ti ti-list-check"></i>Priorização</a>
+      <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
+      <a href="analistas.html" class="nav-item active"><i class="ti ti-users"></i>Analistas</a>
+      <a href="#" class="nav-item disabled"><i class="ti ti-report"></i>Relatórios</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>Olá, [Nome do gerente]</span>
+      <a href="login.html">Sair</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page">
+      <div class="page-header">
+        <h1>Analistas</h1>
+        <p>Desempenho individual do time — mês atual</p>
+      </div>
+
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-label">Analistas ativos</div>
+          <div class="metric-value">4</div>
+          <div class="metric-sub">com oficinas sob responsabilidade</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Visitas por analista (média)</div>
+          <div class="metric-value">32</div>
+          <div class="metric-sub">no mês atual</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Melhor efetividade</div>
+          <div class="metric-value success">94%</div>
+          <div class="metric-sub">Marina Costa</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Mais oficinas atrasadas</div>
+          <div class="metric-value danger">5</div>
+          <div class="metric-sub">Carlos Menezes</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h2>Visitas realizadas por analista</h2>
+          <p>Comparativo do mês atual, realizado x meta</p>
+          <div class="chart-wrap"><canvas id="chartVisitas"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h2>Efetividade do time</h2>
+          <p>Evolução nos últimos 6 meses</p>
+          <div class="chart-wrap"><canvas id="chartEfetividade"></canvas></div>
+        </div>
+      </div>
+
+      <div class="section-title">Desempenho por analista</div>
+      <div class="table-card">
+        <table class="oficinas">
+          <thead>
+            <tr>
+              <th>Analista</th>
+              <th>Oficinas sob responsabilidade</th>
+              <th>Visitas realizadas</th>
+              <th>Meta</th>
+              <th>Efetividade</th>
+              <th>Atrasadas</th>
+              <th>Tempo médio de visita</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>João Pedro</td>
+              <td>28</td>
+              <td>30</td>
+              <td>32</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="badge ok">94%</span>
+                </div>
+              </td>
+              <td>1</td>
+              <td>38 min</td>
+            </tr>
+            <tr>
+              <td>Marina Costa</td>
+              <td>25</td>
+              <td>34</td>
+              <td>30</td>
+              <td><span class="badge ok">94%</span></td>
+              <td>0</td>
+              <td>41 min</td>
+            </tr>
+            <tr>
+              <td>Carlos Menezes</td>
+              <td>31</td>
+              <td>21</td>
+              <td>32</td>
+              <td><span class="badge atrasada">66%</span></td>
+              <td>5</td>
+              <td>52 min</td>
+            </tr>
+            <tr>
+              <td>Renata Alves</td>
+              <td>22</td>
+              <td>24</td>
+              <td>28</td>
+              <td><span class="badge pendente">86%</span></td>
+              <td>2</td>
+              <td>35 min</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const brand = '#0051AA';
+    const brandLight = '#9db9dd';
+    const success = '#18A558';
+    const border = '#dde3ee';
+    const textMuted = '#6b7a99';
+
+    Chart.defaults.font.family = 'DM Sans, sans-serif';
+    Chart.defaults.color = textMuted;
+    Chart.defaults.borderColor = border;
+
+    new Chart(document.getElementById('chartVisitas'), {
+      type: 'bar',
+      data: {
+        labels: ['João Pedro', 'Marina Costa', 'Carlos Menezes', 'Renata Alves'],
+        datasets: [
+          { label: 'Realizadas', data: [30, 34, 21, 24], backgroundColor: brand, borderRadius: 4 },
+          { label: 'Meta', data: [32, 30, 32, 28], backgroundColor: brandLight, borderRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 16, font: { size: 11 } } } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: border } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('chartEfetividade'), {
+      type: 'line',
+      data: {
+        labels: ['Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'],
+        datasets: [{
+          label: 'Efetividade do time',
+          data: [72, 76, 79, 81, 83, 85],
+          borderColor: success,
+          backgroundColor: 'rgba(24,165,88,.1)',
+          fill: true,
+          tension: .35,
+          pointRadius: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: false, min: 60, max: 100, ticks: { callback: (v) => v + '%' }, grid: { color: border } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
