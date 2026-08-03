@@ -215,7 +215,7 @@
       <a href="painel-gerente.html" class="nav-item active"><i class="ti ti-layout-dashboard"></i>Painel geral</a>
       <a href="priorizacao.html" class="nav-item"><i class="ti ti-list-check"></i>Priorização</a>
       <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
-      <a href="#" class="nav-item disabled"><i class="ti ti-users"></i>Analistas</a>
+      <a href="analistas.html" class="nav-item"><i class="ti ti-users"></i>Analistas</a>
       <a href="#" class="nav-item disabled"><i class="ti ti-report"></i>Relatórios</a>
     </nav>
     <div class="sidebar-footer">
@@ -258,10 +258,10 @@
       </div>
 
       <div class="section-title-row">
-        <div class="section-title">Oficinas priorizadas</div>
+        <div class="section-title">Visitas priorizadas pela gerência</div>
         <a href="priorizacao.html">Ver todas e importar planilha →</a>
       </div>
-      <div class="table-card">
+      <div class="table-card" style="margin-bottom:32px;">
         <table class="oficinas">
           <thead>
             <tr>
@@ -293,6 +293,54 @@
               <td>Semanal</td>
               <td>01/08/2026</td>
               <td><span class="badge ok">Em dia</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-title-row">
+        <div class="section-title">Visitas de rotina do analista</div>
+        <a href="analistas.html">Ver desempenho por analista →</a>
+      </div>
+      <p style="color:var(--text-muted);font-size:.85rem;margin-top:-10px;margin-bottom:14px;">
+        Visitas que cada analista fez por conta própria, fora da priorização da gerência.
+      </p>
+      <div class="table-card">
+        <table class="oficinas">
+          <thead>
+            <tr>
+              <th>Oficina</th>
+              <th>Analista</th>
+              <th>Tipo</th>
+              <th>Data</th>
+              <th>Motivo</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Borracharia Vale Sul</td>
+              <td>Marina Costa</td>
+              <td>Externa</td>
+              <td>01/08/2026</td>
+              <td>Auditoria de Rotina</td>
+              <td><span class="badge ok">Sem pendências</span></td>
+            </tr>
+            <tr>
+              <td>Oficina Rápida Zona Norte</td>
+              <td>João Pedro</td>
+              <td>Interna</td>
+              <td>31/07/2026</td>
+              <td>Reclamação</td>
+              <td><span class="badge pendente">2 pontos de melhoria</span></td>
+            </tr>
+            <tr>
+              <td>Auto Peças União</td>
+              <td>Marina Costa</td>
+              <td>Externa</td>
+              <td>29/07/2026</td>
+              <td>Prospecção</td>
+              <td><span class="badge pendente">Aguardando aprovação</span></td>
             </tr>
           </tbody>
         </table>
