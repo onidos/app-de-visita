@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visitas Unidas — Priorização de Oficinas</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css">
+  <style>
+    body {
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 24px; }
+    .sidebar-logo img { height: 28px; }
+    .sidebar-logo span { font-family: var(--font-head); font-weight: 700; font-size: .92rem; color: var(--text); }
+    .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: .87rem; font-weight: 500; transition: var(--transition);
+    }
+    .nav-item i { font-size: 18px; }
+    .nav-item:hover { background: var(--brand-light); color: var(--brand); }
+    .nav-item.active { background: var(--brand-light); color: var(--brand); font-weight: 600; }
+    .nav-item.disabled { opacity: .4; pointer-events: none; }
+    .sidebar-footer {
+      padding: 14px 20px 0; margin: 12px 12px 0; border-top: 1.5px solid var(--border);
+      font-size: .82rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px;
+    }
+    .sidebar-footer a { color: var(--text-muted); text-decoration: none; font-weight: 600; }
+    .sidebar-footer a:hover { color: var(--danger); }
+
+    .content { flex: 1; min-width: 0; }
+    .page { width: 100%; max-width: 1080px; margin: 0 auto; padding: 32px 28px 60px; }
+
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 { font-family: var(--font-head); font-size: 1.5rem; color: var(--text); }
+    .page-header p { color: var(--text-muted); font-size: .9rem; margin-top: 4px; }
+
+    .import-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .import-card h2 {
+      font-family: var(--font-head);
+      font-size: 1.05rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .import-card > p { color: var(--text-muted); font-size: .87rem; margin-bottom: 16px; }
+
+    .req-box {
+      background: var(--brand-light);
+      border: 1.5px solid rgba(0,81,170,.2);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-size: .85rem;
+      color: var(--text);
+    }
+    .req-box strong { color: var(--brand); display: block; margin-bottom: 6px; }
+    .req-box ul { margin: 0 0 0 18px; }
+    .req-box li { margin-bottom: 2px; }
+    .req-box a { color: var(--brand); font-weight: 600; }
+
+    .upload-box {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .upload-box:hover { border-color: var(--brand); background: var(--brand-light); }
+    .upload-box i { font-size: 30px; color: var(--brand); display: block; margin-bottom: 8px; }
+    .upload-box .upload-title { font-weight: 600; color: var(--text); margin-bottom: 4px; font-size: .92rem; }
+    .upload-box .upload-sub { font-size: .8rem; color: var(--text-muted); }
+
+    .import-status {
+      display: none;
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: .85rem;
+    }
+    .import-status.ok { background: #f0faf4; border: 1px solid #a3d9b1; color: #1a5c30; }
+
+    .section-title { font-family: var(--font-head); font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+
+    .table-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    table.oficinas { width: 100%; border-collapse: collapse; font-size: .87rem; }
+    table.oficinas th {
+      text-align: left; background: #fafbfd; color: var(--text-muted); font-weight: 600;
+      font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; padding: 12px 16px;
+      border-bottom: 1.5px solid var(--border);
+    }
+    table.oficinas td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); }
+    table.oficinas tr:last-child td { border-bottom: none; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: .76rem; font-weight: 600; }
+    .badge.atrasada { background: #fff4f4; color: var(--danger); }
+    .badge.ok { background: #eafaf1; color: var(--success); }
+    .badge.pendente { background: var(--warn-bg); color: var(--warn-text); }
+    .badge.alta { background: #fff4f4; color: var(--danger); }
+    .badge.media { background: var(--warn-bg); color: var(--warn-text); }
+    .badge.baixa { background: #eafaf1; color: var(--success); }
+
+    @media (max-width: 720px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; align-items: center; padding: 12px; overflow-x: auto; }
+      .sidebar-logo { padding: 0 12px 0 0; }
+      .sidebar-nav { flex-direction: row; flex: none; }
+      .sidebar-footer { display: none; }
+    }
+    @media (max-width: 560px) {
+      .page { padding: 24px 16px 40px; }
+      table.oficinas { font-size: .8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <img src="imagens/logo.png" alt="Logo da Unidas">
+      <span>Visitas Unidas</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="painel-gerente.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Painel geral</a>
+      <a href="priorizacao.html" class="nav-item active"><i class="ti ti-list-check"></i>Priorização</a>
+      <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
+      <a href="#" class="nav-item disabled"><i class="ti ti-users"></i>Analistas</a>
+      <a href="#" class="nav-item disabled"><i class="ti ti-report"></i>Relatórios</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>Olá, [Nome do gerente]</span>
+      <a href="login.html">Sair</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page">
+      <div class="page-header">
+        <h1>Priorização de oficinas</h1>
+        <p>Defina quais oficinas o time deve priorizar e com qual frequência</p>
+      </div>
+
+      <div class="import-card">
+        <h2>Importar planilha</h2>
+        <p>Atualize a prioridade de várias oficinas de uma vez, via Excel.</p>
+
+        <div class="req-box">
+          <strong>A planilha precisa ter exatamente estas 3 colunas:</strong>
+          <ul>
+            <li><strong>CNPJ</strong> — identifica a oficina (existente ou nova)</li>
+            <li><strong>Prioridade</strong> — Alta, Média ou Baixa</li>
+            <li><strong>Analista responsável</strong> — nome ou e-mail do analista</li>
+          </ul>
+          <a href="#">Baixar planilha modelo (.xlsx)</a>
+        </div>
+
+        <div class="upload-box" id="upload-box">
+          <i class="ti ti-cloud-upload"></i>
+          <div class="upload-title">Clique para selecionar o arquivo, ou arraste aqui</div>
+          <div class="upload-sub">.xlsx ou .xls</div>
+          <input type="file" id="input-planilha" accept=".xlsx,.xls" style="display:none">
+        </div>
+
+        <div class="import-status" id="import-status"></div>
+      </div>
+
+      <div class="section-title">Oficinas priorizadas</div>
+      <div class="table-card">
+        <table class="oficinas">
+          <thead>
+            <tr>
+              <th>Oficina</th>
+              <th>CNPJ</th>
+              <th>Analista</th>
+              <th>Frequência</th>
+              <th>Prioridade</th>
+              <th>Última visita</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Auto Center Silva</td>
+              <td>12.345.678/0001-90</td>
+              <td>João Pedro</td>
+              <td>Semanal</td>
+              <td><span class="badge alta">Alta</span></td>
+              <td>28/07/2026</td>
+              <td><span class="badge atrasada">Atrasada</span></td>
+            </tr>
+            <tr>
+              <td>Mecânica Bom Retiro</td>
+              <td>98.765.432/0001-10</td>
+              <td>Marina Costa</td>
+              <td>Mensal</td>
+              <td><span class="badge media">Média</span></td>
+              <td>15/07/2026</td>
+              <td><span class="badge pendente">Pendente</span></td>
+            </tr>
+            <tr>
+              <td>Oficina Central RAC</td>
+              <td>11.222.333/0001-44</td>
+              <td>João Pedro</td>
+              <td>Semanal</td>
+              <td><span class="badge alta">Alta</span></td>
+              <td>01/08/2026</td>
+              <td><span class="badge ok">Em dia</span></td>
+            </tr>
+            <tr>
+              <td>Oficina Vale Verde</td>
+              <td>22.333.444/0001-55</td>
+              <td>Marina Costa</td>
+              <td>Mensal</td>
+              <td><span class="badge baixa">Baixa</span></td>
+              <td>10/07/2026</td>
+              <td><span class="badge ok">Em dia</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const uploadBox = document.getElementById('upload-box');
+    const input = document.getElementById('input-planilha');
+    const status = document.getElementById('import-status');
+
+    uploadBox.addEventListener('click', () => input.click());
+
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      if (!file) return;
+      // Protótipo: sem backend real. O fornecedor implementa a leitura,
+      // validação das 3 colunas e atualização da lista abaixo.
+      status.style.display = 'block';
+      status.className = 'import-status ok';
+      status.textContent = `✔ ${file.name} selecionado. (Protótipo — sem processamento real ainda.)`;
+    });
+  </script>
+
+</body>
+</html>
