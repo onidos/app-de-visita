@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visitas Unidas — Login</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      align-items: center;
+    }
+
+    .login-container {
+      max-width: 380px;
+      text-align: center;
+    }
+
+    .login-title {
+      font-family: var(--font-head);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .login-subtitle {
+      color: var(--text-muted);
+      font-size: .92rem;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .ms-login-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 13px 20px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .ms-login-btn:hover {
+      border-color: var(--brand);
+      box-shadow: 0 4px 14px rgba(0,81,170,.12);
+      transform: translateY(-1px);
+    }
+
+    .ms-logo {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1.5px;
+    }
+    .ms-logo span { display: block; }
+    .ms-logo span:nth-child(1) { background: #F35325; }
+    .ms-logo span:nth-child(2) { background: #81BC06; }
+    .ms-logo span:nth-child(3) { background: #05A6F0; }
+    .ms-logo span:nth-child(4) { background: #FFBA08; }
+
+    .login-footnote {
+      margin-top: 24px;
+      font-size: .78rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .login-error {
+      display: none;
+      margin-top: 16px;
+      padding: 10px 14px;
+      background: #fff4f4;
+      border: 1.5px solid #f5a8a8;
+      color: var(--danger);
+      border-radius: var(--radius-sm);
+      font-size: .85rem;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="container login-container">
+    <img src="imagens/logo.png" alt="Logo da Unidas" class="logo">
+
+    <h1 class="login-title">Visitas Unidas</h1>
+    <p class="login-subtitle">Registro e acompanhamento de visitas a oficinas</p>
+
+    <button type="button" class="ms-login-btn" id="btn-login-microsoft">
+      <span class="ms-logo" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+      Continuar com a Microsoft
+    </button>
+
+    <div class="login-error" id="login-error">
+      Não foi possível confirmar seu acesso. Verifique se está usando sua conta corporativa e tente novamente.
+    </div>
+
+    <p class="login-footnote">
+      Login corporativo (conta Microsoft).<br>
+      Seu perfil — gerente ou analista — é identificado automaticamente após o acesso.
+    </p>
+
+    <p class="login-footnote" style="margin-top:12px;">
+      Protótipo — simular acesso:
+      <a href="painel-gerente.html" style="color:var(--brand);font-weight:600;">Gerente</a>
+      ·
+      <a href="#" style="color:var(--text-muted);">Analista (tela ainda não criada)</a>
+    </p>
+  </div>
+
+  <script>
+    // Placeholder de integração — o fornecedor substitui pelo fluxo real
+    // de autenticação Microsoft (MSAL / Azure AD) e pelo redirecionamento
+    // condicional conforme o perfil retornado (gerente -> painel-gerente.html,
+    // analista -> lista de oficinas priorizadas).
+    document.getElementById('btn-login-microsoft').addEventListener('click', () => {
+      console.log('Iniciar autenticação Microsoft (MSAL)');
+      window.location.href = 'painel-gerente.html';
+    });
+  </script>
+</body>
+</html>
