@@ -129,7 +129,8 @@
 
       <div class="req-box" id="req-box">
         <strong>Como Gerente</strong>, você pode cadastrar Coordenadores e Analistas.
-        Um Coordenador, ao acessar essa mesma tela, só consegue cadastrar Analistas.
+        Um Coordenador, ao acessar essa mesma tela, só consegue cadastrar Analistas (nunca outro Coordenador).
+        O sistema deve manter sempre <strong>pelo menos 2 Gerentes ativos</strong>.
       </div>
 
       <div class="form-card">
@@ -152,12 +153,10 @@
                 <option value="Analista">Analista</option>
               </select>
             </div>
-            <div class="form-field" id="campo-coordenador">
-              <label for="coordenador">Coordenador responsável</label>
-              <select id="coordenador">
-                <option value="" disabled selected>Selecione o coordenador</option>
-                <option value="Fernanda Lima">Fernanda Lima</option>
-                <option value="Ricardo Santos">Ricardo Santos</option>
+            <div class="form-field" id="campo-vinculo" style="display:none;">
+              <label for="vinculo" id="label-vinculo">Vinculado a</label>
+              <select id="vinculo">
+                <option value="" disabled selected>Selecione</option>
               </select>
             </div>
           </div>
@@ -173,23 +172,37 @@
               <th>Nome</th>
               <th>E-mail</th>
               <th>Perfil</th>
-              <th>Coordenador responsável</th>
+              <th>Vinculado a</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             <tr>
+              <td>Beatriz Camargo</td>
+              <td>beatriz.camargo@unidas.com.br</td>
+              <td><span class="badge perfil-gerente">Gerente</span></td>
+              <td>—</td>
+              <td><span class="badge ok">Ativo</span></td>
+            </tr>
+            <tr>
+              <td>Rodrigo Teixeira</td>
+              <td>rodrigo.teixeira@unidas.com.br</td>
+              <td><span class="badge perfil-gerente">Gerente</span></td>
+              <td>—</td>
+              <td><span class="badge ok">Ativo</span></td>
+            </tr>
+            <tr>
               <td>Fernanda Lima</td>
               <td>fernanda.lima@unidas.com.br</td>
               <td><span class="badge perfil-coordenador">Coordenador</span></td>
-              <td>—</td>
+              <td>Beatriz Camargo</td>
               <td><span class="badge ok">Ativo</span></td>
             </tr>
             <tr>
               <td>Ricardo Santos</td>
               <td>ricardo.santos@unidas.com.br</td>
               <td><span class="badge perfil-coordenador">Coordenador</span></td>
-              <td>—</td>
+              <td>Rodrigo Teixeira</td>
               <td><span class="badge ok">Ativo</span></td>
             </tr>
             <tr>
@@ -228,13 +241,34 @@
 
   <script>
     const perfilSelect = document.getElementById('perfil');
-    const campoCoordenador = document.getElementById('campo-coordenador');
-    const coordenadorSelect = document.getElementById('coordenador');
+    const campoVinculo = document.getElementById('campo-vinculo');
+    const labelVinculo = document.getElementById('label-vinculo');
+    const vinculoSelect = document.getElementById('vinculo');
+
+    const gerentesDisponiveis = ['Beatriz Camargo', 'Rodrigo Teixeira'];
+    const coordenadoresDisponiveis = ['Fernanda Lima', 'Ricardo Santos'];
+
+    function preencherVinculo(lista) {
+      vinculoSelect.innerHTML = '<option value="" disabled selected>Selecione</option>' +
+        lista.map(n => `<option value="${n}">${n}</option>`).join('');
+    }
 
     perfilSelect.addEventListener('change', () => {
-      const isAnalista = perfilSelect.value === 'Analista';
-      campoCoordenador.style.display = isAnalista ? 'flex' : 'none';
-      coordenadorSelect.required = isAnalista;
+      const perfil = perfilSelect.value;
+      if (perfil === 'Coordenador') {
+        labelVinculo.textContent = 'Gerente responsável';
+        preencherVinculo(gerentesDisponiveis);
+        campoVinculo.style.display = 'flex';
+        vinculoSelect.required = true;
+      } else if (perfil === 'Analista') {
+        labelVinculo.textContent = 'Coordenador responsável';
+        preencherVinculo(coordenadoresDisponiveis);
+        campoVinculo.style.display = 'flex';
+        vinculoSelect.required = true;
+      } else {
+        campoVinculo.style.display = 'none';
+        vinculoSelect.required = false;
+      }
     });
 
     document.getElementById('form-usuario').addEventListener('submit', (e) => {
@@ -242,24 +276,24 @@
       const nome = document.getElementById('nome').value.trim();
       const email = document.getElementById('email').value.trim();
       const perfil = perfilSelect.value;
-      const coordenadorEl = document.getElementById('coordenador');
-      const coordenador = perfil === 'Analista' ? (coordenadorEl ? coordenadorEl.value : '') : '—';
+      const vinculoEl = document.getElementById('vinculo');
+      const vinculo = perfil !== '' ? (vinculoEl ? vinculoEl.value : '') : '';
 
-      if (!nome || !email || !perfil || (perfil === 'Analista' && !coordenador)) return;
+      if (!nome || !email || !perfil || !vinculo) return;
 
-      const badgeClass = perfil === 'Analista' ? 'perfil-analista' : 'perfil-coordenador';
+      const badgeMap = { Analista: 'perfil-analista', Coordenador: 'perfil-coordenador', Gerente: 'perfil-gerente' };
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${nome}</td>
         <td>${email}</td>
-        <td><span class="badge ${badgeClass}">${perfil}</span></td>
-        <td>${coordenador}</td>
+        <td><span class="badge ${badgeMap[perfil]}">${perfil}</span></td>
+        <td>${vinculo}</td>
         <td><span class="badge ok">Ativo</span></td>
       `;
       document.querySelector('#tabela-usuarios tbody').appendChild(row);
 
       e.target.reset();
-      campoCoordenador.style.display = 'none';
+      campoVinculo.style.display = 'none';
     });
   </script>
 
@@ -274,7 +308,7 @@
       if (el) el.textContent = `Olá, [Nome] · ${label}`;
 
       if (perfil === 'coordenador') {
-        // Coordenador só pode cadastrar Analistas — remove a opção "Coordenador" do select
+        // Coordenador só pode cadastrar Analistas — nunca outro Coordenador
         const perfilSelectEl = document.getElementById('perfil');
         const opcaoCoordenador = perfilSelectEl.querySelector('option[value="Coordenador"]');
         if (opcaoCoordenador) opcaoCoordenador.remove();
@@ -284,13 +318,13 @@
 
         // O analista cadastrado já fica automaticamente sob a responsabilidade
         // deste coordenador — não faz sentido ele "escolher" o coordenador.
-        const campoCoordenadorEl = document.getElementById('campo-coordenador');
-        campoCoordenadorEl.innerHTML =
+        document.getElementById('campo-vinculo').innerHTML =
           '<label>Coordenador responsável</label>' +
-          '<input type="text" id="coordenador" value="Você ([Nome] · logado)" disabled>';
+          '<input type="text" id="vinculo" value="Você ([Nome] · logado)" disabled>';
 
         document.getElementById('req-box').innerHTML =
-          '<strong>Como Coordenador</strong>, você só pode cadastrar Analistas — e eles já ficam automaticamente sob sua responsabilidade.';
+          '<strong>Como Coordenador</strong>, você só pode cadastrar Analistas — e eles já ficam automaticamente sob sua responsabilidade. ' +
+          'O sistema deve manter sempre <strong>pelo menos 2 Gerentes ativos</strong>.';
       }
     })();
   </script>
