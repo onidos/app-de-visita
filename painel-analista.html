@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visitas Unidas — Meu Painel</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  body { display:flex; align-items:stretch; justify-content:flex-start; padding:0; min-height:100vh; }
+
+  .sidebar { width:220px; flex-shrink:0; background:var(--surface); border-right:1.5px solid var(--border);
+    display:flex; flex-direction:column; padding:24px 0; position:sticky; top:0; height:100vh; }
+  .sidebar-logo { display:flex; align-items:center; gap:10px; padding:0 20px 24px; }
+  .sidebar-logo img { height:28px; }
+  .sidebar-logo span { font-family:var(--font-head); font-weight:700; font-size:.92rem; color:var(--text); }
+  .sidebar-nav { flex:1; display:flex; flex-direction:column; gap:2px; padding:0 12px; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius-sm);
+    color:var(--text-muted); text-decoration:none; font-size:.87rem; font-weight:500; transition:var(--transition); }
+  .nav-item i { font-size:18px; }
+  .nav-item:hover { background:var(--brand-light); color:var(--brand); }
+  .nav-item.active { background:var(--brand-light); color:var(--brand); font-weight:600; }
+  .sidebar-footer { padding:14px 20px 0; margin:12px 12px 0; border-top:1.5px solid var(--border);
+    font-size:.82rem; color:var(--text-muted); display:flex; flex-direction:column; gap:6px; }
+  .sidebar-footer a { color:var(--text-muted); text-decoration:none; font-weight:600; }
+  .sidebar-footer a:hover { color:var(--danger); }
+
+  .content { flex:1; min-width:0; }
+  .page { width:100%; max-width:1080px; margin:0 auto; padding:32px 28px 60px; }
+
+  .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px; }
+  .page-header h1 { font-family:var(--font-head); font-size:1.5rem; color:var(--text); }
+  .page-header p { color:var(--text-muted); font-size:.9rem; margin-top:4px; }
+
+  .btn-registrar { background:var(--brand); color:#fff; border:none; border-radius:50px; padding:13px 26px;
+    font-family:var(--font-body); font-weight:600; font-size:.92rem; cursor:pointer;
+    box-shadow:0 4px 14px rgba(0,81,170,.3); transition:var(--transition);
+    display:inline-flex; align-items:center; gap:8px; text-decoration:none; }
+  .btn-registrar:hover { background:var(--brand-dark); transform:translateY(-1px); }
+
+  .metrics { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:20px; }
+  .metric-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); padding:20px; }
+  .metric-label { font-size:.78rem; color:var(--text-muted); font-weight:500; margin-bottom:8px; }
+  .metric-value { font-family:var(--font-head); font-size:1.7rem; font-weight:700; color:var(--text); }
+  .metric-value.warn { color:var(--warn-text); }
+  .metric-sub { font-size:.78rem; color:var(--text-muted); margin-top:4px; }
+
+  .shared-card {
+    background:linear-gradient(135deg, var(--brand-light), var(--surface));
+    border:1.5px solid rgba(0,81,170,.25); border-radius:var(--radius); padding:20px;
+    margin-bottom:32px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  }
+  .shared-card .left { display:flex; align-items:center; gap:14px; }
+  .shared-card i { font-size:30px; color:var(--brand); }
+  .shared-card .metric-label { color:var(--brand); font-weight:600; }
+  .shared-card .metric-value { color:var(--text); }
+  .shared-tag { font-size:.72rem; font-weight:700; color:var(--brand); background:#fff; padding:4px 10px; border-radius:50px; text-transform:uppercase; letter-spacing:.03em; }
+
+  .charts-row { display:grid; grid-template-columns:1fr; gap:16px; margin-bottom:32px; }
+  .chart-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); padding:20px; }
+  .chart-card h2 { font-family:var(--font-head); font-size:.95rem; font-weight:700; color:var(--text); margin-bottom:4px; }
+  .chart-card p { font-size:.8rem; color:var(--text-muted); margin-bottom:16px; }
+  .chart-wrap { position:relative; height:220px; }
+
+  .section-title-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .section-title { font-family:var(--font-head); font-size:1.05rem; font-weight:700; color:var(--text); }
+
+  .table-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:32px; }
+  table.oficinas { width:100%; border-collapse:collapse; font-size:.87rem; }
+  table.oficinas th { text-align:left; background:#fafbfd; color:var(--text-muted); font-weight:600; font-size:.75rem;
+    text-transform:uppercase; letter-spacing:.04em; padding:12px 16px; border-bottom:1.5px solid var(--border); }
+  table.oficinas td { padding:12px 16px; border-bottom:1px solid var(--border); color:var(--text); }
+  table.oficinas tr:last-child td { border-bottom:none; }
+
+  .badge { display:inline-block; padding:3px 10px; border-radius:50px; font-size:.76rem; font-weight:600; }
+  .badge.atrasada { background:#fff4f4; color:var(--danger); }
+  .badge.ok { background:#eafaf1; color:var(--success); }
+  .badge.pendente { background:var(--warn-bg); color:var(--warn-text); }
+  .badge.alta { background:#fff4f4; color:var(--danger); }
+
+  @media (max-width:900px) { .metrics { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:720px) {
+    body { flex-direction:column; }
+    .sidebar { width:100%; height:auto; position:relative; flex-direction:row; align-items:center; padding:12px; overflow-x:auto; }
+    .sidebar-logo { padding:0 12px 0 0; }
+    .sidebar-nav { flex-direction:row; flex:none; }
+    .sidebar-footer { display:none; }
+  }
+  @media (max-width:560px) {
+    .metrics { grid-template-columns:1fr; }
+    .page { padding:24px 16px 40px; }
+    table.oficinas { font-size:.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="imagens/logo.png" alt="Logo da Unidas"><span>Visitas Unidas</span></div>
+  <nav class="sidebar-nav">
+    <a href="painel-analista.html" class="nav-item active"><i class="ti ti-layout-dashboard"></i>Meu painel</a>
+    <a href="registrar-visita.html" class="nav-item"><i class="ti ti-clipboard-plus"></i>Registrar visita</a>
+  </nav>
+  <div class="sidebar-footer"><span id="user-greeting">Olá, [Nome do analista]</span><a href="login.html">Sair</a></div>
+</div>
+
+<div class="content">
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <h1>Meu painel</h1>
+        <p>Seu desempenho — mês atual</p>
+      </div>
+      <a href="registrar-visita.html" class="btn-registrar">+ Registrar visita</a>
+    </div>
+
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="metric-label">Minhas visitas realizadas</div>
+        <div class="metric-value">30</div>
+        <div class="metric-sub">de 32 planejadas</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Visitas priorizadas</div>
+        <div class="metric-value warn">2 de 3</div>
+        <div class="metric-sub">recebidas da gerência/coordenação</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Minha efetividade</div>
+        <div class="metric-value">94%</div>
+        <div class="metric-sub">visitas realizadas x planejadas</div>
+      </div>
+    </div>
+
+    <div class="shared-card">
+      <div class="left">
+        <i class="ti ti-chart-arrows-vertical"></i>
+        <div>
+          <div class="metric-label">Efetividade geral do time</div>
+          <div class="metric-value">85%</div>
+        </div>
+      </div>
+      <span class="shared-tag">Visão compartilhada</span>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <h2>Minhas visitas ao longo do tempo</h2>
+        <p>Últimos 6 meses</p>
+        <div class="chart-wrap"><canvas id="chartMinhas"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-title-row">
+      <div class="section-title">Minhas oficinas priorizadas</div>
+    </div>
+    <div class="table-card">
+      <table class="oficinas">
+        <thead><tr><th>Oficina</th><th>Prioridade</th><th>Última visita</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Auto Center Silva</td><td><span class="badge alta">Alta</span></td><td>28/07/2026</td><td><span class="badge atrasada">Atrasada</span></td></tr>
+          <tr><td>Oficina Central RAC</td><td><span class="badge alta">Alta</span></td><td>01/08/2026</td><td><span class="badge ok">Em dia</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-title-row">
+      <div class="section-title">Minhas visitas recentes</div>
+    </div>
+    <div class="table-card">
+      <table class="oficinas">
+        <thead><tr><th>Oficina</th><th>Tipo</th><th>Data</th><th>Motivo</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <tr><td>Oficina Rápida Zona Norte</td><td>Interna</td><td>31/07/2026</td><td>Reclamação</td><td><span class="badge pendente">2 pontos de melhoria</span></td></tr>
+          <tr><td>Borracharia Vale Sul</td><td>Externa</td><td>25/07/2026</td><td>Auditoria de Rotina</td><td><span class="badge ok">Sem pendências</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('user-greeting').textContent = 'Olá, [Nome] · Analista';
+
+  Chart.defaults.font.family = 'DM Sans, sans-serif';
+  Chart.defaults.color = '#6b7a99';
+  Chart.defaults.borderColor = '#dde3ee';
+
+  new Chart(document.getElementById('chartMinhas'), {
+    type: 'bar',
+    data: {
+      labels: ['Mar','Abr','Mai','Jun','Jul','Ago'],
+      datasets: [{ label:'Visitas realizadas', data:[26,28,29,27,30,30], backgroundColor:'#0051AA', borderRadius:4 }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{ y:{ beginAtZero:true, grid:{ color:'#dde3ee' } }, x:{ grid:{ display:false } } }
+    }
+  });
+</script>
+
+</body>
+</html>
