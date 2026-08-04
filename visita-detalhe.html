@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visitas Unidas — Detalhe da Visita</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css">
+<style>
+  body { display:flex; align-items:stretch; justify-content:flex-start; padding:0; min-height:100vh; }
+  .sidebar { width:220px; flex-shrink:0; background:var(--surface); border-right:1.5px solid var(--border);
+    display:flex; flex-direction:column; padding:24px 0; position:sticky; top:0; height:100vh; }
+  .sidebar-logo { display:flex; align-items:center; gap:10px; padding:0 20px 24px; }
+  .sidebar-logo img { height:28px; }
+  .sidebar-logo span { font-family:var(--font-head); font-weight:700; font-size:.92rem; color:var(--text); }
+  .sidebar-nav { flex:1; display:flex; flex-direction:column; gap:2px; padding:0 12px; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius-sm);
+    color:var(--text-muted); text-decoration:none; font-size:.87rem; font-weight:500; transition:var(--transition); }
+  .nav-item i { font-size:18px; }
+  .nav-item:hover { background:var(--brand-light); color:var(--brand); }
+  .nav-item.disabled { opacity:.4; pointer-events:none; }
+  .sidebar-footer { padding:14px 20px 0; margin:12px 12px 0; border-top:1.5px solid var(--border);
+    font-size:.82rem; color:var(--text-muted); display:flex; flex-direction:column; gap:6px; }
+  .sidebar-footer a { color:var(--text-muted); text-decoration:none; font-weight:600; }
+  .sidebar-footer a:hover { color:var(--danger); }
+
+  .content { flex:1; min-width:0; }
+  .page { width:100%; max-width:780px; margin:0 auto; padding:32px 28px 60px; }
+  .back-link { font-size:.85rem; color:var(--text-muted); text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:14px; }
+  .back-link:hover { color:var(--brand); }
+  .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
+  .page-header h1 { font-family:var(--font-head); font-size:1.4rem; color:var(--text); }
+  .page-header p { color:var(--text-muted); font-size:.87rem; margin-top:2px; }
+
+  .banner { border-radius:var(--radius-sm); padding:14px 16px; font-size:.86rem; margin-bottom:22px; display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  .banner.editavel { background:#f0faf4; border:1.5px solid #a3d9b1; color:#1a5c30; }
+  .banner.leitura { background:#fffbf0; border:1.5px solid #f0d080; color:#7a5a00; }
+  .banner .txt { display:flex; gap:10px; align-items:center; }
+  .banner i { font-size:20px; }
+  .btn-outline { background:#fff; border:1.5px solid var(--warn-text); color:var(--warn-text); border-radius:50px;
+    padding:8px 16px; font-family:var(--font-body); font-weight:600; font-size:.82rem; cursor:pointer; }
+  .btn-outline:hover { background:var(--warn-text); color:#fff; }
+
+  .card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); padding:22px; margin-bottom:18px; }
+  .card h2 { font-family:var(--font-head); font-size:.95rem; color:var(--text); margin-bottom:12px; }
+  .review-list { list-style:none; }
+  .review-list li { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border); font-size:.87rem; }
+  .review-list li:last-child { border-bottom:none; }
+  .review-list .k { color:var(--text-muted); }
+  .review-list .v { color:var(--text); font-weight:600; text-align:right; }
+
+  .audit-row { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--border); font-size:.87rem; }
+  .audit-row:last-child { border-bottom:none; }
+  .audit-badge { padding:3px 10px; border-radius:50px; font-size:.76rem; font-weight:600; }
+  .audit-badge.sim { background:#eafaf1; color:var(--success); }
+  .audit-badge.nao { background:#fff4f4; color:var(--danger); }
+
+  .thumbs { display:flex; flex-wrap:wrap; gap:10px; }
+  .thumb { width:84px; height:84px; border-radius:var(--radius-sm); background:var(--brand-light); border:1.5px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:var(--brand); }
+
+  .btn-editar { background:var(--brand); color:#fff; border:none; border-radius:50px; padding:12px 24px;
+    font-family:var(--font-body); font-weight:600; font-size:.88rem; cursor:pointer; }
+  .btn-editar:hover { background:var(--brand-dark); }
+  .btn-editar.disabled { background:var(--border); color:var(--text-muted); cursor:not-allowed; }
+
+  @media (max-width:720px) {
+    body { flex-direction:column; }
+    .sidebar { width:100%; height:auto; position:relative; flex-direction:row; align-items:center; padding:12px; overflow-x:auto; }
+    .sidebar-logo { padding:0 12px 0 0; }
+    .sidebar-nav { flex-direction:row; flex:none; }
+    .sidebar-footer { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="imagens/logo.png" alt="Logo da Unidas"><span>Visitas Unidas</span></div>
+  <nav class="sidebar-nav" id="sidebar-nav">
+    <a href="painel-gerente.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Painel geral</a>
+    <a href="priorizacao.html" class="nav-item"><i class="ti ti-list-check"></i>Priorização</a>
+    <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
+    <a href="analistas.html" class="nav-item"><i class="ti ti-users"></i>Analistas</a>
+    <a href="usuarios.html" class="nav-item"><i class="ti ti-user-plus"></i>Usuários</a>
+    <a href="perguntas.html" class="nav-item" id="nav-perguntas"><i class="ti ti-checklist"></i>Perguntas</a>
+    <a href="#" class="nav-item disabled"><i class="ti ti-report"></i>Relatórios</a>
+  </nav>
+  <div class="sidebar-footer"><span id="user-greeting">Olá, [Nome]</span><a href="login.html">Sair</a></div>
+</div>
+
+<div class="content">
+  <div class="page">
+    <a href="javascript:history.back()" class="back-link">← Voltar</a>
+    <div class="page-header">
+      <div>
+        <h1>Auto Center Silva</h1>
+        <p>Visita registrada em 28/07/2026 por João Pedro</p>
+      </div>
+    </div>
+
+    <div class="banner leitura" id="banner-permissao">
+      <div class="txt"><i class="ti ti-lock"></i><span>Você está visualizando em modo leitura. Peça autorização ao seu coordenador para editar.</span></div>
+      <button class="btn-outline" id="btn-solicitar">Solicitar autorização de edição</button>
+    </div>
+
+    <div class="card">
+      <h2>Dados gerais</h2>
+      <ul class="review-list">
+        <li><span class="k">Tipo</span><span class="v">Externa</span></li>
+        <li><span class="k">CNPJ</span><span class="v">12.345.678/0001-90</span></li>
+        <li><span class="k">Motivo</span><span class="v">Auditoria de Rotina</span></li>
+        <li><span class="k">Endereço</span><span class="v">Rua das Oficinas, 88 - Campinas/SP</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Auditoria de estrutura</h2>
+      <div class="audit-row"><span>Fachada e entrada</span><span class="audit-badge sim">Sim</span></div>
+      <div class="audit-row"><span>Guarda dos veículos</span><span class="audit-badge sim">Sim</span></div>
+      <div class="audit-row"><span>Equipe</span><span class="audit-badge nao">Não</span></div>
+      <div class="audit-row"><span>Equipamentos</span><span class="audit-badge sim">Sim</span></div>
+      <div class="audit-row"><span>Sala de espera</span><span class="audit-badge sim">Sim</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Fotos anexadas</h2>
+      <div class="thumbs">
+        <div class="thumb"><i class="ti ti-photo"></i></div>
+        <div class="thumb"><i class="ti ti-photo"></i></div>
+        <div class="thumb"><i class="ti ti-photo"></i></div>
+      </div>
+    </div>
+
+    <button class="btn-editar disabled" id="btn-editar">Editar registro</button>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const perfil = params.get('perfil') || 'gerente';
+  const autorizado = params.get('autorizado') === '1';
+  const greeting = document.getElementById('user-greeting');
+  const banner = document.getElementById('banner-permissao');
+  const btnEditar = document.getElementById('btn-editar');
+  const btnSolicitar = document.getElementById('btn-solicitar');
+
+  if (perfil === 'analista') {
+    document.getElementById('sidebar-nav').innerHTML = `
+      <a href="painel-analista.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Meu painel</a>
+      <a href="registrar-visita.html?perfil=analista" class="nav-item"><i class="ti ti-clipboard-plus"></i>Registrar visita</a>
+    `;
+    if (greeting) greeting.textContent = 'Olá, [Nome] · Analista';
+
+    if (autorizado) {
+      banner.className = 'banner editavel';
+      banner.innerHTML = '<div class="txt"><i class="ti ti-circle-check"></i><span>Edição liberada pelo seu coordenador para este registro.</span></div>';
+      btnEditar.classList.remove('disabled');
+    }
+    // se não autorizado, mantém o banner de leitura + botão de solicitar (padrão do HTML)
+  } else {
+    // Gerente ou Coordenador — pode editar qualquer registro
+    const label = perfil === 'coordenador' ? 'Coordenador(a)' : 'Gerente';
+    if (greeting) greeting.textContent = `Olá, [Nome] · ${label}`;
+    if (perfil === 'coordenador') {
+      const np = document.getElementById('nav-perguntas');
+      if (np) np.remove();
+    }
+    banner.className = 'banner editavel';
+    banner.innerHTML = '<div class="txt"><i class="ti ti-circle-check"></i><span>Você pode editar este registro livremente.</span></div>';
+    btnEditar.classList.remove('disabled');
+  }
+
+  btnSolicitar?.addEventListener('click', () => {
+    btnSolicitar.textContent = '✔ Solicitação enviada';
+    btnSolicitar.disabled = true;
+    alert('Solicitação enviada para Fernanda Lima (seu coordenador). Você será avisado quando ela responder. (protótipo)');
+  });
+
+  btnEditar.addEventListener('click', () => {
+    if (btnEditar.classList.contains('disabled')) return;
+    alert('Modo de edição (protótipo) — aqui abriria o formulário preenchido para alteração.');
+  });
+</script>
+
+</body>
+</html>

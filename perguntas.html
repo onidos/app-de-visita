@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visitas Unidas — Perguntas da Auditoria</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css">
+<style>
+  body { display:flex; align-items:stretch; justify-content:flex-start; padding:0; min-height:100vh; }
+  .sidebar { width:220px; flex-shrink:0; background:var(--surface); border-right:1.5px solid var(--border);
+    display:flex; flex-direction:column; padding:24px 0; position:sticky; top:0; height:100vh; }
+  .sidebar-logo { display:flex; align-items:center; gap:10px; padding:0 20px 24px; }
+  .sidebar-logo img { height:28px; }
+  .sidebar-logo span { font-family:var(--font-head); font-weight:700; font-size:.92rem; color:var(--text); }
+  .sidebar-nav { flex:1; display:flex; flex-direction:column; gap:2px; padding:0 12px; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius-sm);
+    color:var(--text-muted); text-decoration:none; font-size:.87rem; font-weight:500; transition:var(--transition); }
+  .nav-item i { font-size:18px; }
+  .nav-item:hover { background:var(--brand-light); color:var(--brand); }
+  .nav-item.active { background:var(--brand-light); color:var(--brand); font-weight:600; }
+  .nav-item.disabled { opacity:.4; pointer-events:none; }
+  .sidebar-footer { padding:14px 20px 0; margin:12px 12px 0; border-top:1.5px solid var(--border);
+    font-size:.82rem; color:var(--text-muted); display:flex; flex-direction:column; gap:6px; }
+  .sidebar-footer a { color:var(--text-muted); text-decoration:none; font-weight:600; }
+  .sidebar-footer a:hover { color:var(--danger); }
+
+  .content { flex:1; min-width:0; }
+  .page { width:100%; max-width:820px; margin:0 auto; padding:32px 28px 60px; }
+  .page-header { margin-bottom:8px; }
+  .page-header h1 { font-family:var(--font-head); font-size:1.5rem; color:var(--text); }
+  .page-header p { color:var(--text-muted); font-size:.9rem; margin-top:4px; }
+
+  .req-box { background:var(--brand-light); border:1.5px solid rgba(0,81,170,.2); border-radius:var(--radius-sm);
+    padding:12px 18px; margin:20px 0 24px; font-size:.85rem; color:var(--text); }
+
+  .q-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius);
+    padding:18px 20px; margin-bottom:14px; display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
+  .q-card .info { flex:1; }
+  .q-card .q-title { font-weight:600; color:var(--text); font-size:.94rem; margin-bottom:2px; }
+  .q-card .q-sub { font-size:.82rem; color:var(--text-muted); }
+  .q-card .q-flag { display:inline-block; margin-top:6px; font-size:.72rem; font-weight:600; color:var(--brand);
+    background:var(--brand-light); padding:2px 9px; border-radius:50px; }
+  .q-actions { display:flex; gap:6px; flex-shrink:0; }
+  .icon-btn { width:32px; height:32px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface);
+    color:var(--text-muted); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:var(--transition); }
+  .icon-btn:hover { border-color:var(--brand); color:var(--brand); }
+  .icon-btn.danger:hover { border-color:var(--danger); color:var(--danger); }
+
+  .form-card { background:var(--surface); border:1.5px dashed var(--border); border-radius:var(--radius);
+    padding:20px; margin-top:20px; }
+  .form-card h2 { font-family:var(--font-head); font-size:1rem; color:var(--text); margin-bottom:14px; }
+  .form-field { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .form-field label { font-size:.82rem; font-weight:600; color:var(--text); }
+  .form-field input, .form-field textarea { padding:10px 12px; border:1.5px solid var(--border);
+    border-radius:var(--radius-sm); font-family:var(--font-body); font-size:.88rem; color:var(--text); }
+  .checkbox-row { display:flex; align-items:center; gap:8px; font-size:.85rem; color:var(--text); margin-bottom:16px; }
+
+  .btn-primary { background:var(--brand); color:#fff; border:none; border-radius:50px; padding:11px 22px;
+    font-family:var(--font-body); font-weight:600; font-size:.87rem; cursor:pointer; transition:var(--transition); }
+  .btn-primary:hover { background:var(--brand-dark); }
+
+  .locked { text-align:center; padding:80px 20px; color:var(--text-muted); }
+  .locked i { font-size:40px; color:var(--danger); margin-bottom:12px; display:block; }
+  .locked h2 { font-family:var(--font-head); color:var(--text); margin-bottom:6px; }
+
+  @media (max-width:720px) {
+    body { flex-direction:column; }
+    .sidebar { width:100%; height:auto; position:relative; flex-direction:row; align-items:center; padding:12px; overflow-x:auto; }
+    .sidebar-logo { padding:0 12px 0 0; }
+    .sidebar-nav { flex-direction:row; flex:none; }
+    .sidebar-footer { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="imagens/logo.png" alt="Logo da Unidas"><span>Visitas Unidas</span></div>
+  <nav class="sidebar-nav">
+    <a href="painel-gerente.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Painel geral</a>
+    <a href="priorizacao.html" class="nav-item"><i class="ti ti-list-check"></i>Priorização</a>
+    <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
+    <a href="analistas.html" class="nav-item"><i class="ti ti-users"></i>Analistas</a>
+    <a href="usuarios.html" class="nav-item"><i class="ti ti-user-plus"></i>Usuários</a>
+    <a href="perguntas.html" class="nav-item active" id="nav-perguntas"><i class="ti ti-checklist"></i>Perguntas</a>
+    <a href="#" class="nav-item disabled"><i class="ti ti-report"></i>Relatórios</a>
+  </nav>
+  <div class="sidebar-footer"><span id="user-greeting">Olá, [Nome]</span><a href="login.html">Sair</a></div>
+</div>
+
+<div class="content">
+  <div class="page" id="page-conteudo">
+    <div class="page-header">
+      <h1>Perguntas da auditoria</h1>
+      <p>Exclusivo do Gerente — define o que aparece na etapa de Auditoria do registro de visita</p>
+    </div>
+
+    <div class="req-box">Alterar, remover ou adicionar uma pergunta aqui muda imediatamente o formulário de visita para todos os analistas.</div>
+
+    <div id="lista-perguntas"></div>
+
+    <div class="form-card">
+      <h2>+ Adicionar pergunta</h2>
+      <div class="form-field">
+        <label for="novo-titulo">Título</label>
+        <input type="text" id="novo-titulo" placeholder="Ex.: Sinalização de segurança">
+      </div>
+      <div class="form-field">
+        <label for="novo-sub">Descrição</label>
+        <input type="text" id="novo-sub" placeholder="Ex.: Extintores e saídas de emergência visíveis">
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="novo-obrigatorio" checked>
+        <label for="novo-obrigatorio">Exigir comentário quando a resposta for "Não"</label>
+      </div>
+      <button class="btn-primary" id="btn-add">+ Adicionar pergunta</button>
+    </div>
+  </div>
+
+  <div class="page locked" id="page-bloqueado" style="display:none;">
+    <i class="ti ti-lock"></i>
+    <h2>Acesso restrito</h2>
+    <p>Essa tela é exclusiva do perfil Gerente.<br>Coordenadores e Analistas não podem editar as perguntas da auditoria.</p>
+  </div>
+</div>
+
+<script>
+  let perguntas = [
+    { titulo:'Fachada e entrada', sub:'Estado de conservação', obrig:true },
+    { titulo:'Guarda dos veículos', sub:'Conforme padrões da organização', obrig:true },
+    { titulo:'Equipe', sub:'Uniformes e EPIs', obrig:true },
+    { titulo:'Equipamentos', sub:'Cabine de pintura e maquinário', obrig:true },
+    { titulo:'Sala de espera', sub:'Conforto e climatização', obrig:false },
+  ];
+
+  function render() {
+    const el = document.getElementById('lista-perguntas');
+    el.innerHTML = perguntas.map((p, i) => `
+      <div class="q-card">
+        <div class="info">
+          <div class="q-title">${p.titulo}</div>
+          <div class="q-sub">${p.sub}</div>
+          ${p.obrig ? '<span class="q-flag">Comentário obrigatório se "Não"</span>' : ''}
+        </div>
+        <div class="q-actions">
+          <button class="icon-btn" title="Editar" onclick="editar(${i})"><i class="ti ti-pencil"></i></button>
+          <button class="icon-btn danger" title="Remover" onclick="remover(${i})"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function editar(i) {
+    const p = perguntas[i];
+    const novoTitulo = prompt('Título da pergunta:', p.titulo);
+    if (novoTitulo === null) return;
+    const novoSub = prompt('Descrição:', p.sub);
+    if (novoSub === null) return;
+    p.titulo = novoTitulo.trim() || p.titulo;
+    p.sub = novoSub.trim() || p.sub;
+    render();
+  }
+
+  function remover(i) {
+    if (!confirm(`Remover a pergunta "${perguntas[i].titulo}"?`)) return;
+    perguntas.splice(i, 1);
+    render();
+  }
+
+  document.getElementById('btn-add').addEventListener('click', () => {
+    const titulo = document.getElementById('novo-titulo').value.trim();
+    const sub = document.getElementById('novo-sub').value.trim();
+    const obrig = document.getElementById('novo-obrigatorio').checked;
+    if (!titulo) { alert('Informe o título da pergunta.'); return; }
+    perguntas.push({ titulo, sub, obrig });
+    document.getElementById('novo-titulo').value = '';
+    document.getElementById('novo-sub').value = '';
+    render();
+  });
+
+  render();
+
+  // Protótipo — restringe a tela ao perfil Gerente
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const perfil = params.get('perfil') || 'gerente';
+    const greeting = document.getElementById('user-greeting');
+    const label = perfil === 'coordenador' ? 'Coordenador(a)' : perfil === 'analista' ? 'Analista' : 'Gerente';
+    if (greeting) greeting.textContent = `Olá, [Nome] · ${label}`;
+
+    if (perfil !== 'gerente') {
+      document.getElementById('page-conteudo').style.display = 'none';
+      document.getElementById('page-bloqueado').style.display = 'block';
+    }
+  })();
+</script>
+
+</body>
+</html>
