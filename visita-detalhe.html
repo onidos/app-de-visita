@@ -79,6 +79,7 @@
   <div class="sidebar-logo"><img src="imagens/logo.png" alt="Logo da Unidas"><span>Visitas Unidas</span></div>
   <nav class="sidebar-nav" id="sidebar-nav">
     <a href="painel-gerente.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Painel geral</a>
+    <a href="visitas.html" class="nav-item"><i class="ti ti-clipboard-list"></i>Visitas</a>
     <a href="priorizacao.html" class="nav-item"><i class="ti ti-list-check"></i>Priorização</a>
     <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
     <a href="analistas.html" class="nav-item"><i class="ti ti-users"></i>Analistas</a>
@@ -148,6 +149,7 @@
   if (perfil === 'analista') {
     document.getElementById('sidebar-nav').innerHTML = `
       <a href="painel-analista.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Meu painel</a>
+      <a href="visitas.html?perfil=analista" class="nav-item"><i class="ti ti-clipboard-list"></i>Visitas</a>
       <a href="registrar-visita.html?perfil=analista" class="nav-item"><i class="ti ti-clipboard-plus"></i>Registrar visita</a>
     `;
     if (greeting) greeting.textContent = 'Olá, [Nome] · Analista';
