@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visitas Unidas — Visitas</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css">
+<style>
+  body { display:flex; align-items:stretch; justify-content:flex-start; padding:0; min-height:100vh; }
+  .sidebar { width:220px; flex-shrink:0; background:var(--surface); border-right:1.5px solid var(--border);
+    display:flex; flex-direction:column; padding:24px 0; position:sticky; top:0; height:100vh; }
+  .sidebar-logo { display:flex; align-items:center; gap:10px; padding:0 20px 24px; }
+  .sidebar-logo img { height:28px; }
+  .sidebar-logo span { font-family:var(--font-head); font-weight:700; font-size:.92rem; color:var(--text); }
+  .sidebar-nav { flex:1; display:flex; flex-direction:column; gap:2px; padding:0 12px; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius-sm);
+    color:var(--text-muted); text-decoration:none; font-size:.87rem; font-weight:500; transition:var(--transition); }
+  .nav-item i { font-size:18px; }
+  .nav-item:hover { background:var(--brand-light); color:var(--brand); }
+  .nav-item.active { background:var(--brand-light); color:var(--brand); font-weight:600; }
+  .nav-item.disabled { opacity:.4; pointer-events:none; }
+  .sidebar-footer { padding:14px 20px 0; margin:12px 12px 0; border-top:1.5px solid var(--border);
+    font-size:.82rem; color:var(--text-muted); display:flex; flex-direction:column; gap:6px; }
+  .sidebar-footer a { color:var(--text-muted); text-decoration:none; font-weight:600; }
+  .sidebar-footer a:hover { color:var(--danger); }
+
+  .content { flex:1; min-width:0; }
+  .page { width:100%; max-width:1080px; margin:0 auto; padding:32px 28px 60px; }
+  .page-header { margin-bottom:8px; }
+  .page-header h1 { font-family:var(--font-head); font-size:1.5rem; color:var(--text); }
+  .page-header p { color:var(--text-muted); font-size:.9rem; margin-top:4px; }
+
+  .scope-note { display:inline-flex; align-items:center; gap:6px; font-size:.78rem; font-weight:600; color:var(--brand);
+    background:var(--brand-light); padding:5px 12px; border-radius:50px; margin:14px 0 20px; }
+
+  .filters { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .filters input, .filters select { padding:9px 12px; border:1.5px solid var(--border); border-radius:var(--radius-sm);
+    font-family:var(--font-body); font-size:.85rem; color:var(--text); }
+  .filters input { flex:1; min-width:180px; }
+
+  .table-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  table.oficinas { width:100%; border-collapse:collapse; font-size:.85rem; }
+  table.oficinas th { text-align:left; background:#fafbfd; color:var(--text-muted); font-weight:600; font-size:.72rem;
+    text-transform:uppercase; letter-spacing:.03em; padding:11px 14px; border-bottom:1.5px solid var(--border); }
+  table.oficinas td { padding:11px 14px; border-bottom:1px solid var(--border); color:var(--text); }
+  table.oficinas tr:last-child td { border-bottom:none; }
+  table.oficinas a { color:var(--brand); font-weight:600; text-decoration:none; }
+
+  .badge { display:inline-block; padding:3px 10px; border-radius:50px; font-size:.74rem; font-weight:600; }
+  .badge.ok { background:#eafaf1; color:var(--success); }
+  .badge.pendente { background:var(--warn-bg); color:var(--warn-text); }
+  .badge.completa { background:var(--brand-light); color:var(--brand); }
+  .badge.resumida { background:#f0e8fb; color:#6a3fb5; }
+
+  .empty { text-align:center; padding:40px; color:var(--text-muted); font-size:.88rem; }
+
+  @media (max-width:720px) {
+    body { flex-direction:column; }
+    .sidebar { width:100%; height:auto; position:relative; flex-direction:row; align-items:center; padding:12px; overflow-x:auto; }
+    .sidebar-logo { padding:0 12px 0 0; }
+    .sidebar-nav { flex-direction:row; flex:none; }
+    .sidebar-footer { display:none; }
+  }
+  @media (max-width:560px) { table.oficinas { font-size:.78rem; } }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="imagens/logo.png" alt="Logo da Unidas"><span>Visitas Unidas</span></div>
+  <nav class="sidebar-nav" id="sidebar-nav">
+    <a href="painel-gerente.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Painel geral</a>
+    <a href="visitas.html" class="nav-item active"><i class="ti ti-clipboard-list"></i>Visitas</a>
+    <a href="priorizacao.html" class="nav-item"><i class="ti ti-list-check"></i>Priorização</a>
+    <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
+    <a href="analistas.html" class="nav-item"><i class="ti ti-users"></i>Analistas</a>
+    <a href="usuarios.html" class="nav-item"><i class="ti ti-user-plus"></i>Usuários</a>
+    <a href="perguntas.html" class="nav-item" id="nav-perguntas"><i class="ti ti-checklist"></i>Perguntas</a>
+    <a href="#" class="nav-item disabled"><i class="ti ti-report"></i>Relatórios</a>
+  </nav>
+  <div class="sidebar-footer"><span id="user-greeting">Olá, [Nome]</span><a href="login.html">Sair</a></div>
+</div>
+
+<div class="content">
+  <div class="page">
+    <div class="page-header">
+      <h1>Visitas</h1>
+      <p>Tabela analítica de todas as visitas registradas</p>
+    </div>
+    <div class="scope-note" id="scope-note"><i class="ti ti-eye"></i> Mostrando todas as visitas do sistema</div>
+
+    <div class="filters">
+      <input type="text" id="busca" placeholder="Buscar por oficina ou analista...">
+      <select id="filtro-resultado">
+        <option value="">Todos os resultados</option>
+        <option>Sem pendências</option>
+        <option>Pendente</option>
+        <option>Aguardando aprovação</option>
+      </select>
+    </div>
+
+    <div class="table-card">
+      <table class="oficinas" id="tabela-visitas">
+        <thead>
+          <tr>
+            <th>Oficina</th><th>Analista</th><th>Coordenador</th><th>Tipo</th><th>Data</th>
+            <th>Motivo</th><th>Auditoria</th><th>Resultado</th><th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="empty" id="empty-msg" style="display:none;">Nenhuma visita encontrada.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const visitas = [
+    { oficina:'Auto Center Silva', analista:'João Pedro', coordenador:'Fernanda Lima', tipo:'Externa', data:'28/07/2026', motivo:'Auditoria de Rotina', auditoria:'Completa', resultado:'Sem pendências' },
+    { oficina:'Oficina Central RAC', analista:'João Pedro', coordenador:'Fernanda Lima', tipo:'Externa', data:'01/08/2026', motivo:'Auditoria de Rotina', auditoria:'Resumida', resultado:'Sem pendências' },
+    { oficina:'Oficina Rápida Zona Norte', analista:'João Pedro', coordenador:'Fernanda Lima', tipo:'Interna', data:'31/07/2026', motivo:'Reclamação', auditoria:'Completa', resultado:'Pendente' },
+    { oficina:'Mecânica Bom Retiro', analista:'Marina Costa', coordenador:'Fernanda Lima', tipo:'Externa', data:'15/07/2026', motivo:'Auditoria de Rotina', auditoria:'Completa', resultado:'Pendente' },
+    { oficina:'Borracharia Vale Sul', analista:'Marina Costa', coordenador:'Fernanda Lima', tipo:'Externa', data:'25/07/2026', motivo:'Auditoria de Rotina', auditoria:'Resumida', resultado:'Sem pendências' },
+    { oficina:'Auto Peças União', analista:'Marina Costa', coordenador:'Fernanda Lima', tipo:'Externa', data:'29/07/2026', motivo:'Prospecção', auditoria:'Completa', resultado:'Aguardando aprovação' },
+    { oficina:'Funilaria Ideal', analista:'Carlos Menezes', coordenador:'Ricardo Santos', tipo:'Interna', data:'20/07/2026', motivo:'Auditoria de Rotina', auditoria:'Completa', resultado:'Sem pendências' },
+    { oficina:'Mecânica Ipiranga', analista:'Carlos Menezes', coordenador:'Ricardo Santos', tipo:'Externa', data:'18/07/2026', motivo:'Reclamação', auditoria:'Completa', resultado:'Pendente' },
+    { oficina:'Oficina Vale Verde', analista:'Renata Alves', coordenador:'Ricardo Santos', tipo:'Externa', data:'10/07/2026', motivo:'Auditoria de Rotina', auditoria:'Resumida', resultado:'Sem pendências' },
+  ];
+
+  const params = new URLSearchParams(window.location.search);
+  const perfil = params.get('perfil') || 'gerente';
+  const quemCoordenador = params.get('coordenador') || 'Fernanda Lima';
+  const quemAnalista = params.get('analista') || 'João Pedro';
+
+  let escopo = visitas;
+  let scopeText = '<i class="ti ti-eye"></i> Mostrando todas as visitas do sistema';
+
+  if (perfil === 'coordenador') {
+    escopo = visitas.filter(v => v.coordenador === quemCoordenador);
+    scopeText = `<i class="ti ti-eye"></i> Mostrando as visitas dos analistas de ${quemCoordenador}`;
+  } else if (perfil === 'analista') {
+    escopo = visitas.filter(v => v.analista === quemAnalista);
+    scopeText = `<i class="ti ti-eye"></i> Mostrando somente as suas visitas (${quemAnalista})`;
+  }
+
+  document.getElementById('scope-note').innerHTML = scopeText;
+
+  function badgeResultado(r) {
+    if (r === 'Sem pendências') return `<span class="badge ok">${r}</span>`;
+    if (r === 'Pendente') return `<span class="badge pendente">${r}</span>`;
+    return `<span class="badge pendente">${r}</span>`;
+  }
+
+  function render() {
+    const busca = document.getElementById('busca').value.toLowerCase();
+    const filtroResultado = document.getElementById('filtro-resultado').value;
+    const linhas = escopo.filter(v =>
+      (v.oficina.toLowerCase().includes(busca) || v.analista.toLowerCase().includes(busca)) &&
+      (!filtroResultado || v.resultado === filtroResultado)
+    );
+
+    const tbody = document.querySelector('#tabela-visitas tbody');
+    document.getElementById('empty-msg').style.display = linhas.length ? 'none' : 'block';
+    tbody.innerHTML = linhas.map(v => `
+      <tr>
+        <td><a href="visita-detalhe.html?perfil=${perfil}">${v.oficina}</a></td>
+        <td>${v.analista}</td>
+        <td>${v.coordenador}</td>
+        <td>${v.tipo}</td>
+        <td>${v.data}</td>
+        <td>${v.motivo}</td>
+        <td><span class="badge ${v.auditoria.toLowerCase()}">${v.auditoria}</span></td>
+        <td>${badgeResultado(v.resultado)}</td>
+        <td><a href="visita-detalhe.html?perfil=${perfil}">Ver →</a></td>
+      </tr>
+    `).join('');
+  }
+
+  document.getElementById('busca').addEventListener('input', render);
+  document.getElementById('filtro-resultado').addEventListener('change', render);
+  render();
+
+  // saudação + isolamento de navegação (analista nunca vê o menu do gerente)
+  const greeting = document.getElementById('user-greeting');
+  if (perfil === 'analista') {
+    document.getElementById('sidebar-nav').innerHTML = `
+      <a href="painel-analista.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Meu painel</a>
+      <a href="visitas.html?perfil=analista" class="nav-item active"><i class="ti ti-clipboard-list"></i>Visitas</a>
+      <a href="registrar-visita.html?perfil=analista" class="nav-item"><i class="ti ti-clipboard-plus"></i>Registrar visita</a>
+    `;
+    if (greeting) greeting.textContent = `Olá, [Nome] · Analista`;
+  } else {
+    const label = perfil === 'coordenador' ? 'Coordenador(a)' : 'Gerente';
+    if (greeting) greeting.textContent = `Olá, [Nome] · ${label}`;
+    if (perfil === 'coordenador') {
+      const np = document.getElementById('nav-perguntas');
+      if (np) np.remove();
+    }
+  }
+</script>
+
+</body>
+</html>
