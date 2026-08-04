@@ -84,6 +84,14 @@
     .badge.perfil-gerente { background: #f0e8fb; color: #6a3fb5; }
     .badge.perfil-coordenador { background: var(--warn-bg); color: var(--warn-text); }
     .badge.perfil-analista { background: var(--brand-light); color: var(--brand); }
+    .badge.inativo { background: #f1f0ec; color: var(--text-muted); }
+
+    .icon-btn { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--surface);
+      color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+    .icon-btn:hover { border-color: var(--danger); color: var(--danger); }
+    .icon-btn.reativar:hover { border-color: var(--success); color: var(--success); }
+    .icon-btn:disabled { opacity: .3; cursor: not-allowed; }
+    .icon-btn:disabled:hover { border-color: var(--border); color: var(--text-muted); }
 
     @media (max-width: 720px) {
       body { flex-direction: column; }
@@ -108,6 +116,7 @@
     </div>
     <nav class="sidebar-nav">
       <a href="painel-gerente.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Painel geral</a>
+      <a href="visitas.html" class="nav-item"><i class="ti ti-clipboard-list"></i>Visitas</a>
       <a href="priorizacao.html" class="nav-item"><i class="ti ti-list-check"></i>Priorização</a>
       <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
       <a href="analistas.html" class="nav-item"><i class="ti ti-users"></i>Analistas</a>
@@ -175,64 +184,73 @@
               <th>Perfil</th>
               <th>Vinculado a</th>
               <th>Status</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr data-perfil="Gerente" data-vinculo="Beatriz Camargo">
               <td>Beatriz Camargo</td>
               <td>beatriz.camargo@unidas.com.br</td>
               <td><span class="badge perfil-gerente">Gerente</span></td>
               <td>—</td>
-              <td><span class="badge ok">Ativo</span></td>
+              <td><span class="badge ok status-badge">Ativo</span></td>
+              <td><button class="icon-btn toggle-btn" title="Desativar"><i class="ti ti-power"></i></button></td>
             </tr>
-            <tr>
+            <tr data-perfil="Gerente" data-vinculo="Rodrigo Teixeira">
               <td>Rodrigo Teixeira</td>
               <td>rodrigo.teixeira@unidas.com.br</td>
               <td><span class="badge perfil-gerente">Gerente</span></td>
               <td>—</td>
-              <td><span class="badge ok">Ativo</span></td>
+              <td><span class="badge ok status-badge">Ativo</span></td>
+              <td><button class="icon-btn toggle-btn" title="Desativar"><i class="ti ti-power"></i></button></td>
             </tr>
-            <tr>
+            <tr data-perfil="Coordenador" data-vinculo="Fernanda Lima">
               <td>Fernanda Lima</td>
               <td>fernanda.lima@unidas.com.br</td>
               <td><span class="badge perfil-coordenador">Coordenador</span></td>
               <td>Beatriz Camargo</td>
-              <td><span class="badge ok">Ativo</span></td>
+              <td><span class="badge ok status-badge">Ativo</span></td>
+              <td><button class="icon-btn toggle-btn" title="Desativar"><i class="ti ti-power"></i></button></td>
             </tr>
-            <tr>
+            <tr data-perfil="Coordenador" data-vinculo="Ricardo Santos">
               <td>Ricardo Santos</td>
               <td>ricardo.santos@unidas.com.br</td>
               <td><span class="badge perfil-coordenador">Coordenador</span></td>
               <td>Rodrigo Teixeira</td>
-              <td><span class="badge ok">Ativo</span></td>
+              <td><span class="badge ok status-badge">Ativo</span></td>
+              <td><button class="icon-btn toggle-btn" title="Desativar"><i class="ti ti-power"></i></button></td>
             </tr>
-            <tr>
+            <tr data-perfil="Analista" data-vinculo="Fernanda Lima">
               <td>João Pedro</td>
               <td>joao.pedro@unidas.com.br</td>
               <td><span class="badge perfil-analista">Analista</span></td>
               <td>Fernanda Lima</td>
-              <td><span class="badge ok">Ativo</span></td>
+              <td><span class="badge ok status-badge">Ativo</span></td>
+              <td><button class="icon-btn toggle-btn" title="Desativar"><i class="ti ti-power"></i></button></td>
             </tr>
-            <tr>
+            <tr data-perfil="Analista" data-vinculo="Fernanda Lima">
               <td>Marina Costa</td>
               <td>marina.costa@unidas.com.br</td>
               <td><span class="badge perfil-analista">Analista</span></td>
               <td>Fernanda Lima</td>
-              <td><span class="badge ok">Ativo</span></td>
+              <td><span class="badge ok status-badge">Ativo</span></td>
+              <td><button class="icon-btn toggle-btn" title="Desativar"><i class="ti ti-power"></i></button></td>
             </tr>
-            <tr>
+            <tr data-perfil="Analista" data-vinculo="Ricardo Santos">
               <td>Carlos Menezes</td>
               <td>carlos.menezes@unidas.com.br</td>
               <td><span class="badge perfil-analista">Analista</span></td>
               <td>Ricardo Santos</td>
-              <td><span class="badge ok">Ativo</span></td>
+              <td><span class="badge ok status-badge">Ativo</span></td>
+              <td><button class="icon-btn toggle-btn" title="Desativar"><i class="ti ti-power"></i></button></td>
             </tr>
-            <tr>
+            <tr data-perfil="Analista" data-vinculo="Ricardo Santos">
               <td>Renata Alves</td>
               <td>renata.alves@unidas.com.br</td>
               <td><span class="badge perfil-analista">Analista</span></td>
               <td>Ricardo Santos</td>
-              <td><span class="badge ok">Ativo</span></td>
+              <td><span class="badge ok status-badge">Ativo</span></td>
+              <td><button class="icon-btn toggle-btn" title="Desativar"><i class="ti ti-power"></i></button></td>
             </tr>
           </tbody>
         </table>
@@ -284,17 +302,56 @@
 
       const badgeMap = { Analista: 'perfil-analista', Coordenador: 'perfil-coordenador', Gerente: 'perfil-gerente' };
       const row = document.createElement('tr');
+      row.dataset.perfil = perfil;
+      row.dataset.vinculo = vinculo;
       row.innerHTML = `
         <td>${nome}</td>
         <td>${email}</td>
         <td><span class="badge ${badgeMap[perfil]}">${perfil}</span></td>
         <td>${vinculo}</td>
-        <td><span class="badge ok">Ativo</span></td>
+        <td><span class="badge ok status-badge">Ativo</span></td>
+        <td><button class="icon-btn toggle-btn" title="Desativar"><i class="ti ti-power"></i></button></td>
       `;
       document.querySelector('#tabela-usuarios tbody').appendChild(row);
 
       e.target.reset();
       campoVinculo.style.display = 'none';
+    });
+
+    // Ativar / desativar usuário
+    function toggleStatus(row) {
+      const perfil = row.dataset.perfil;
+      const badge = row.querySelector('.status-badge');
+      const btn = row.querySelector('.toggle-btn');
+      const estaAtivo = badge.textContent.trim() === 'Ativo';
+
+      if (estaAtivo && perfil === 'Gerente') {
+        const gerentesAtivos = document.querySelectorAll('#tabela-usuarios tbody tr[data-perfil="Gerente"] .status-badge.ok').length;
+        if (gerentesAtivos <= 2) {
+          alert('Não é possível desativar: o sistema deve manter sempre pelo menos 2 Gerentes ativos.');
+          return;
+        }
+      }
+
+      if (estaAtivo) {
+        badge.textContent = 'Inativo';
+        badge.classList.remove('ok');
+        badge.classList.add('inativo');
+        btn.title = 'Ativar';
+        btn.classList.add('reativar');
+      } else {
+        badge.textContent = 'Ativo';
+        badge.classList.remove('inativo');
+        badge.classList.add('ok');
+        btn.title = 'Desativar';
+        btn.classList.remove('reativar');
+      }
+    }
+
+    document.querySelector('#tabela-usuarios tbody').addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle-btn');
+      if (!btn || btn.disabled) return;
+      toggleStatus(btn.closest('tr'));
     });
   </script>
 
@@ -326,7 +383,19 @@
 
         document.getElementById('req-box').innerHTML =
           '<strong>Como Coordenador</strong>, você só pode cadastrar Analistas — e eles já ficam automaticamente sob sua responsabilidade. ' +
+          'Você também só pode ativar/desativar os <strong>seus próprios analistas</strong>. ' +
           'O sistema deve manter sempre <strong>pelo menos 2 Gerentes ativos</strong>.';
+
+        // Coordenador só pode ativar/desativar os próprios analistas (mock: "Fernanda Lima")
+        const meuNome = 'Fernanda Lima';
+        document.querySelectorAll('#tabela-usuarios tbody tr').forEach(row => {
+          const podeGerenciar = row.dataset.perfil === 'Analista' && row.dataset.vinculo === meuNome;
+          const btn = row.querySelector('.toggle-btn');
+          if (!podeGerenciar && btn) {
+            btn.disabled = true;
+            btn.title = 'Você só pode gerenciar os seus próprios analistas';
+          }
+        });
       }
     })();
   </script>
