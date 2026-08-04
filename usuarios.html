@@ -112,6 +112,7 @@
       <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
       <a href="analistas.html" class="nav-item"><i class="ti ti-users"></i>Analistas</a>
       <a href="usuarios.html" class="nav-item active"><i class="ti ti-user-plus"></i>Usuários</a>
+      <a href="perguntas.html" class="nav-item" id="nav-perguntas"><i class="ti ti-checklist"></i>Perguntas</a>
       <a href="#" class="nav-item disabled"><i class="ti ti-report"></i>Relatórios</a>
     </nav>
     <div class="sidebar-footer">
@@ -306,6 +307,7 @@
       const label = perfil === 'coordenador' ? 'Coordenador(a)' : 'Gerente';
       const el = document.getElementById('user-greeting');
       if (el) el.textContent = `Olá, [Nome] · ${label}`;
+      if (perfil === 'coordenador') { const np = document.getElementById('nav-perguntas'); if (np) np.remove(); }
 
       if (perfil === 'coordenador') {
         // Coordenador só pode cadastrar Analistas — nunca outro Coordenador
