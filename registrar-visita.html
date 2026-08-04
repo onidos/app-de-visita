@@ -128,7 +128,7 @@
 
 <div class="sidebar">
   <div class="sidebar-logo"><img src="imagens/logo.png" alt="Logo da Unidas"><span>Visitas Unidas</span></div>
-  <nav class="sidebar-nav">
+  <nav class="sidebar-nav" id="sidebar-nav">
     <a href="painel-gerente.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Painel geral</a>
     <a href="priorizacao.html" class="nav-item"><i class="ti ti-list-check"></i>Priorização</a>
     <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
@@ -136,7 +136,7 @@
     <a href="usuarios.html" class="nav-item"><i class="ti ti-user-plus"></i>Usuários</a>
     <a href="#" class="nav-item disabled"><i class="ti ti-report"></i>Relatórios</a>
   </nav>
-  <div class="sidebar-footer"><span>Olá, [Nome]</span><a href="login.html">Sair</a></div>
+  <div class="sidebar-footer"><span id="user-greeting">Olá, [Nome]</span><a href="login.html">Sair</a></div>
 </div>
 
 <div class="content">
@@ -434,6 +434,29 @@
   }
 
   renderStepper();
+</script>
+
+<script>
+  // Protótipo — identifica o perfil pela URL, simulando o que no sistema real
+  // viria do login. CRÍTICO: quando é o Analista preenchendo, o menu nunca
+  // pode dar caminho para as telas de Gerente/Coordenador.
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const perfil = params.get('perfil') || 'gerente';
+    const greeting = document.getElementById('user-greeting');
+
+    if (perfil === 'analista') {
+      document.getElementById('sidebar-nav').innerHTML = `
+        <a href="painel-analista.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Meu painel</a>
+        <a href="registrar-visita.html?perfil=analista" class="nav-item active"><i class="ti ti-clipboard-plus"></i>Registrar visita</a>
+      `;
+      if (greeting) greeting.textContent = 'Olá, [Nome] · Analista';
+    } else if (perfil === 'coordenador') {
+      if (greeting) greeting.textContent = 'Olá, [Nome] · Coordenador(a)';
+    } else {
+      if (greeting) greeting.textContent = 'Olá, [Nome] · Gerente';
+    }
+  })();
 </script>
 
 </body>
