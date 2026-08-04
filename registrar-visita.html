@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visitas Unidas — Registrar Visita</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css">
+<style>
+  body { display:flex; align-items:stretch; justify-content:flex-start; padding:0; min-height:100vh; }
+
+  .sidebar { width:220px; flex-shrink:0; background:var(--surface); border-right:1.5px solid var(--border);
+    display:flex; flex-direction:column; padding:24px 0; position:sticky; top:0; height:100vh; }
+  .sidebar-logo { display:flex; align-items:center; gap:10px; padding:0 20px 24px; }
+  .sidebar-logo img { height:28px; }
+  .sidebar-logo span { font-family:var(--font-head); font-weight:700; font-size:.92rem; color:var(--text); }
+  .sidebar-nav { flex:1; display:flex; flex-direction:column; gap:2px; padding:0 12px; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius-sm);
+    color:var(--text-muted); text-decoration:none; font-size:.87rem; font-weight:500; transition:var(--transition); }
+  .nav-item i { font-size:18px; }
+  .nav-item:hover { background:var(--brand-light); color:var(--brand); }
+  .nav-item.disabled { opacity:.4; pointer-events:none; }
+  .sidebar-footer { padding:14px 20px 0; margin:12px 12px 0; border-top:1.5px solid var(--border);
+    font-size:.82rem; color:var(--text-muted); display:flex; flex-direction:column; gap:6px; }
+  .sidebar-footer a { color:var(--text-muted); text-decoration:none; font-weight:600; }
+  .sidebar-footer a:hover { color:var(--danger); }
+
+  .content { flex:1; min-width:0; }
+  .page { width:100%; max-width:820px; margin:0 auto; padding:32px 28px 60px; }
+
+  .page-header { margin-bottom:22px; }
+  .page-header h1 { font-family:var(--font-head); font-size:1.5rem; color:var(--text); }
+  .page-header p { color:var(--text-muted); font-size:.9rem; margin-top:4px; }
+
+  .stepper { display:flex; align-items:center; margin-bottom:28px; }
+  .step-dot { display:flex; align-items:center; gap:8px; }
+  .step-dot .circ { width:26px; height:26px; border-radius:50%; background:var(--border); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:700; flex-shrink:0; }
+  .step-dot.active .circ { background:var(--brand); }
+  .step-dot.done .circ { background:var(--success); }
+  .step-dot span.label { font-size:.78rem; color:var(--text-muted); font-weight:600; white-space:nowrap; }
+  .step-dot.active span.label { color:var(--text); }
+  .step-line { flex:1; height:2px; background:var(--border); margin:0 6px; }
+
+  .form-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); padding:26px; }
+  .form-card h2 { font-family:var(--font-head); font-size:1.05rem; color:var(--text); margin-bottom:4px; }
+  .form-card > p.sub { font-size:.85rem; color:var(--text-muted); margin-bottom:20px; }
+
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  .form-field { display:flex; flex-direction:column; gap:6px; }
+  .form-field.full { grid-column:1/-1; }
+  .form-field label { font-size:.82rem; font-weight:600; color:var(--text); }
+  .form-field input, .form-field select, .form-field textarea {
+    padding:10px 12px; border:1.5px solid var(--border); border-radius:var(--radius-sm);
+    font-family:var(--font-body); font-size:.88rem; color:var(--text); background:var(--surface); }
+  .form-field textarea { resize:vertical; min-height:60px; }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus { outline:none; border-color:var(--brand); }
+
+  .locavia-note { display:none; font-size:.78rem; color:var(--success); margin-top:4px; align-items:center; gap:4px; }
+  .locavia-note.show { display:flex; }
+
+  .banner { border-radius:var(--radius-sm); padding:14px 16px; font-size:.86rem; margin-bottom:20px; display:flex; gap:10px; align-items:flex-start; }
+  .banner.completa { background:#fff4f4; border:1.5px solid #f5a8a8; color:#7a1f1f; }
+  .banner.resumida { background:#f0faf4; border:1.5px solid #a3d9b1; color:#1a5c30; }
+  .banner i { font-size:20px; flex-shrink:0; margin-top:1px; }
+
+  .audit-q { border-top:1px solid var(--border); padding:16px 0; }
+  .audit-q:first-of-type { border-top:none; padding-top:0; }
+  .audit-q .q-title { font-weight:600; font-size:.9rem; color:var(--text); margin-bottom:2px; }
+  .audit-q .q-sub { font-size:.78rem; color:var(--text-muted); margin-bottom:10px; }
+  .sim-nao { display:flex; gap:8px; margin-bottom:8px; }
+  .sim-nao button {
+    flex:1; padding:9px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--surface);
+    font-family:var(--font-body); font-weight:600; font-size:.85rem; color:var(--text-muted); cursor:pointer; transition:var(--transition); }
+  .sim-nao button.sel-sim.active { background:#eafaf1; border-color:var(--success); color:var(--success); }
+  .sim-nao button.sel-nao.active { background:#fff4f4; border-color:var(--danger); color:var(--danger); }
+  .audit-q textarea { display:none; width:100%; }
+  .audit-q textarea.show { display:block; }
+
+  .toggle-link { font-size:.82rem; color:var(--brand); font-weight:600; cursor:pointer; text-decoration:underline; }
+
+  .upload-box { border:2px dashed var(--border); border-radius:var(--radius); padding:28px 20px; text-align:center; cursor:pointer; transition:var(--transition); margin-bottom:16px; }
+  .upload-box:hover { border-color:var(--brand); background:var(--brand-light); }
+  .upload-box i { font-size:28px; color:var(--brand); display:block; margin-bottom:6px; }
+  .upload-box .t { font-weight:600; color:var(--text); font-size:.9rem; }
+  .upload-box .s { font-size:.78rem; color:var(--text-muted); }
+  .thumbs { display:flex; flex-wrap:wrap; gap:10px; }
+  .thumb { width:84px; height:84px; border-radius:var(--radius-sm); background:var(--brand-light); border:1.5px solid var(--border);
+    display:flex; align-items:center; justify-content:center; position:relative; font-size:.7rem; color:var(--brand); text-align:center; padding:4px; }
+  .thumb button { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:var(--danger); color:#fff; border:none; cursor:pointer; font-size:.7rem; line-height:1; }
+
+  table.vec { width:100%; border-collapse:collapse; font-size:.83rem; margin-bottom:16px; }
+  table.vec th { text-align:left; background:#fafbfd; color:var(--text-muted); font-weight:600; font-size:.72rem;
+    text-transform:uppercase; letter-spacing:.03em; padding:9px 10px; border-bottom:1.5px solid var(--border); }
+  table.vec td { padding:8px 10px; border-bottom:1px solid var(--border); }
+  table.vec select, table.vec input { width:100%; padding:6px 8px; border:1.5px solid var(--border); border-radius:6px; font-size:.8rem; font-family:var(--font-body); }
+
+  .review-list { list-style:none; }
+  .review-list li { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:.87rem; }
+  .review-list li:last-child { border-bottom:none; }
+  .review-list .k { color:var(--text-muted); }
+  .review-list .v { color:var(--text); font-weight:600; text-align:right; }
+
+  .nav-buttons { display:flex; justify-content:space-between; margin-top:22px; }
+  .btn-primary, .btn-secondary {
+    border:none; border-radius:50px; padding:12px 26px; font-family:var(--font-body); font-weight:600; font-size:.9rem;
+    cursor:pointer; transition:var(--transition); }
+  .btn-primary { background:var(--brand); color:#fff; }
+  .btn-primary:hover { background:var(--brand-dark); transform:translateY(-1px); }
+  .btn-secondary { background:transparent; color:var(--text-muted); border:1.5px solid var(--border); }
+  .btn-secondary:hover { border-color:var(--brand); color:var(--brand); }
+
+  .step-panel { display:none; }
+  .step-panel.active { display:block; }
+
+  @media (max-width:720px) {
+    body { flex-direction:column; }
+    .sidebar { width:100%; height:auto; position:relative; flex-direction:row; align-items:center; padding:12px; overflow-x:auto; }
+    .sidebar-logo { padding:0 12px 0 0; }
+    .sidebar-nav { flex-direction:row; flex:none; }
+    .sidebar-footer { display:none; }
+    .form-grid { grid-template-columns:1fr; }
+    .step-dot span.label { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="imagens/logo.png" alt="Logo da Unidas"><span>Visitas Unidas</span></div>
+  <nav class="sidebar-nav">
+    <a href="painel-gerente.html" class="nav-item"><i class="ti ti-layout-dashboard"></i>Painel geral</a>
+    <a href="priorizacao.html" class="nav-item"><i class="ti ti-list-check"></i>Priorização</a>
+    <a href="#" class="nav-item disabled"><i class="ti ti-building-store"></i>Oficinas</a>
+    <a href="analistas.html" class="nav-item"><i class="ti ti-users"></i>Analistas</a>
+    <a href="usuarios.html" class="nav-item"><i class="ti ti-user-plus"></i>Usuários</a>
+    <a href="#" class="nav-item disabled"><i class="ti ti-report"></i>Relatórios</a>
+  </nav>
+  <div class="sidebar-footer"><span>Olá, [Nome]</span><a href="login.html">Sair</a></div>
+</div>
+
+<div class="content">
+  <div class="page">
+    <div class="page-header">
+      <h1>Registrar visita</h1>
+      <p>Preencha os dados da visita à oficina</p>
+    </div>
+
+    <div class="stepper" id="stepper"></div>
+
+    <div class="form-card">
+
+      <!-- STEP 1 -->
+      <div class="step-panel active" data-step="1">
+        <h2>Dados gerais</h2>
+        <p class="sub">Analista, oficina e motivo da visita</p>
+        <div class="form-grid">
+          <div class="form-field"><label>Tipo de oficina</label>
+            <select id="tipo-oficina">
+              <option value="Externa">Externa</option>
+              <option value="Interna">Interna</option>
+              <option value="Movel">Móvel</option>
+            </select>
+          </div>
+          <div class="form-field"><label>Forma de contato</label>
+            <select id="contato">
+              <option>Presencial</option>
+              <option>Telefone</option>
+            </select>
+          </div>
+          <div class="form-field full"><label>CNPJ da oficina</label>
+            <input type="text" id="cnpj" placeholder="Ex.: 11.222.333/0001-44">
+            <span class="locavia-note" id="locavia-note"><i class="ti ti-plug-connected"></i> Dados carregados do Locavia Web</span>
+          </div>
+          <div class="form-field"><label>Nome da oficina</label><input type="text" id="nome-oficina"></div>
+          <div class="form-field"><label>Serviço / modalidade</label>
+            <select id="servico"><option>Funilaria e Pintura</option><option>Mecânica Geral</option><option>Elétrica</option></select>
+          </div>
+          <div class="form-field full"><label>Endereço completo</label><input type="text" id="endereco"></div>
+          <div class="form-field"><label>Motivo da visita</label>
+            <select id="motivo"><option>Auditoria de Rotina</option><option>Prospecção</option><option>Reclamação</option></select>
+          </div>
+          <div class="form-field"><label>Data e hora</label><input type="text" id="data-hora" readonly></div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-panel" data-step="2">
+        <h2>Auditoria de estrutura</h2>
+        <p class="sub">Definido automaticamente pela regra dos 6 meses</p>
+
+        <div class="banner completa" id="banner-completa">
+          <i class="ti ti-lock"></i>
+          <div><strong>Formulário completo obrigatório.</strong><br>Esta oficina não tem visita completa registrada nos últimos 6 meses.</div>
+        </div>
+        <div class="banner resumida" id="banner-resumida" style="display:none;">
+          <i class="ti ti-circle-check"></i>
+          <div><strong>Visita resumida liberada.</strong><br>Última visita completa: <span id="data-ultima-completa"></span>. <span class="toggle-link" id="forcar-completa">Fazer auditoria completa mesmo assim</span></div>
+        </div>
+
+        <div id="perguntas-auditoria">
+          <div class="audit-q" data-req="true">
+            <div class="q-title">Fachada e entrada</div>
+            <div class="q-sub">Estado de conservação</div>
+            <div class="sim-nao"><button class="sel-sim">Sim</button><button class="sel-nao">Não</button></div>
+            <textarea placeholder="Descreva o que precisa ser melhorado"></textarea>
+          </div>
+          <div class="audit-q" data-req="true">
+            <div class="q-title">Guarda dos veículos</div>
+            <div class="q-sub">Conforme padrões da organização</div>
+            <div class="sim-nao"><button class="sel-sim">Sim</button><button class="sel-nao">Não</button></div>
+            <textarea placeholder="Descreva o que precisa ser melhorado"></textarea>
+          </div>
+          <div class="audit-q" data-req="true">
+            <div class="q-title">Equipe</div>
+            <div class="q-sub">Uniformes e EPIs</div>
+            <div class="sim-nao"><button class="sel-sim">Sim</button><button class="sel-nao">Não</button></div>
+            <textarea placeholder="Descreva o que precisa ser melhorado"></textarea>
+          </div>
+          <div class="audit-q" data-req="true">
+            <div class="q-title">Equipamentos</div>
+            <div class="q-sub">Cabine de pintura e maquinário</div>
+            <div class="sim-nao"><button class="sel-sim">Sim</button><button class="sel-nao">Não</button></div>
+            <textarea placeholder="Descreva o que precisa ser melhorado"></textarea>
+          </div>
+          <div class="audit-q">
+            <div class="q-title">Sala de espera</div>
+            <div class="q-sub">Conforto e climatização — comentário livre</div>
+            <div class="sim-nao"><button class="sel-sim">Sim</button><button class="sel-nao">Não</button></div>
+            <textarea placeholder="Comentário (opcional)"></textarea>
+          </div>
+        </div>
+        <p class="sub" id="msg-resumida" style="display:none;">Visita resumida — as perguntas de auditoria não são exigidas dessa vez.</p>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-panel" data-step="3">
+        <h2>Fotos da visita</h2>
+        <p class="sub">Serão incluídas no e-mail de resumo e no laudo em PDF</p>
+        <div class="upload-box" id="upload-box">
+          <i class="ti ti-camera-plus"></i>
+          <div class="t">Clique para adicionar fotos</div>
+          <div class="s">JPG ou PNG</div>
+          <input type="file" id="input-fotos" accept="image/*" multiple style="display:none">
+        </div>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step-panel" data-step="4">
+        <h2>Veículos</h2>
+        <p class="sub"><i class="ti ti-plug-connected" style="color:var(--success);"></i> Importados automaticamente do Locavia Web (placas com data de parada preenchida)</p>
+        <table class="vec">
+          <thead><tr><th>Placa</th><th>Modelo</th><th>Parado desde</th><th>Status</th><th>Comentário</th></tr></thead>
+          <tbody id="tabela-veiculos"></tbody>
+        </table>
+        <div class="form-grid">
+          <div class="form-field"><label>Necessita aumentar fornecedores?</label>
+            <select id="fornecedores"><option>Não</option><option>Sim</option></select>
+          </div>
+          <div class="form-field"><label>Quantidade necessária</label><input type="number" id="qtd-fornecedores" min="0" value="0"></div>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step-panel" data-step="5">
+        <h2>Revisão e envio</h2>
+        <p class="sub">Confira antes de enviar</p>
+        <ul class="review-list" id="review-list"></ul>
+        <div class="banner resumida" style="margin-top:18px;">
+          <i class="ti ti-mail"></i>
+          <div>Um e-mail de resumo com esses dados e as fotos será enviado para você, seu coordenador responsável e todos os gerentes.</div>
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn-secondary" id="btn-voltar">Voltar</button>
+        <button class="btn-primary" id="btn-proximo">Próximo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const steps = [
+    { n:1, label:'Dados gerais' },
+    { n:2, label:'Auditoria' },
+    { n:3, label:'Fotos' },
+    { n:4, label:'Veículos' },
+    { n:5, label:'Revisão' },
+  ];
+  let current = 1;
+
+  // dados fictícios do Locavia Web (mock)
+  const locaviaDB = {
+    '11.222.333/0001-44': { nome:'Oficina Central RAC', endereco:'Av. das Nações, 1200 - São Paulo/SP', ultimaCompleta:'2026-05-20',
+      veiculos:[{placa:'ABC1D23',modelo:'Onix 1.0',parada:'12/07/2026'},{placa:'DEF4E56',modelo:'HB20 1.6',parada:'20/07/2026'}] },
+    '98.765.432/0001-10': { nome:'Mecânica Bom Retiro', endereco:'Rua Bom Retiro, 340 - São Paulo/SP', ultimaCompleta:null,
+      veiculos:[{placa:'GHI7F89',modelo:'Argo 1.3',parada:'25/07/2026'}] },
+    '12.345.678/0001-90': { nome:'Auto Center Silva', endereco:'Rua das Oficinas, 88 - Campinas/SP', ultimaCompleta:'2025-11-02',
+      veiculos:[{placa:'JKL0G12',modelo:'Compass 1.3',parada:'01/08/2026'},{placa:'MNO3H45',modelo:'Renegade 1.8',parada:'30/07/2026'},{placa:'PQR6I78',modelo:'Toro 1.3',parada:'22/07/2026'}] },
+  };
+
+  function renderStepper() {
+    const el = document.getElementById('stepper');
+    el.innerHTML = '';
+    steps.forEach((s, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'step-dot' + (s.n === current ? ' active' : s.n < current ? ' done' : '');
+      dot.innerHTML = `<div class="circ">${s.n < current ? '✓' : s.n}</div><span class="label">${s.label}</span>`;
+      el.appendChild(dot);
+      if (i < steps.length - 1) {
+        const line = document.createElement('div');
+        line.className = 'step-line';
+        el.appendChild(line);
+      }
+    });
+  }
+
+  function showStep(n) {
+    current = n;
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.toggle('active', +p.dataset.step === n));
+    document.getElementById('btn-voltar').style.visibility = n === 1 ? 'hidden' : 'visible';
+    document.getElementById('btn-proximo').textContent = n === 5 ? 'Enviar registro' : 'Próximo';
+    if (n === 5) buildReview();
+    renderStepper();
+    document.querySelector('.page').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  document.getElementById('btn-proximo').addEventListener('click', () => {
+    if (current === 5) {
+      alert('Registro enviado! (protótipo — sem envio real). E-mail de resumo seria disparado agora.');
+      return;
+    }
+    showStep(current + 1);
+  });
+  document.getElementById('btn-voltar').addEventListener('click', () => { if (current > 1) showStep(current - 1); });
+
+  // data/hora automática
+  document.getElementById('data-hora').value = new Date().toLocaleString('pt-BR');
+
+  // integração Locavia (mock) — dispara ao sair do campo CNPJ
+  document.getElementById('cnpj').addEventListener('blur', () => {
+    const cnpj = document.getElementById('cnpj').value.trim();
+    const dados = locaviaDB[cnpj];
+    const note = document.getElementById('locavia-note');
+    if (!dados) { note.classList.remove('show'); return; }
+
+    document.getElementById('nome-oficina').value = dados.nome;
+    document.getElementById('endereco').value = dados.endereco;
+    note.classList.add('show');
+
+    // regra dos 6 meses
+    const bComp = document.getElementById('banner-completa');
+    const bRes = document.getElementById('banner-resumida');
+    const msgResumida = document.getElementById('msg-resumida');
+    const perguntas = document.getElementById('perguntas-auditoria');
+    let resumidaOk = false;
+
+    if (dados.ultimaCompleta) {
+      const meses = (new Date() - new Date(dados.ultimaCompleta)) / (1000*60*60*24*30);
+      resumidaOk = meses < 6;
+    }
+
+    if (resumidaOk) {
+      bComp.style.display = 'none';
+      bRes.style.display = 'flex';
+      document.getElementById('data-ultima-completa').textContent = new Date(dados.ultimaCompleta).toLocaleDateString('pt-BR');
+      perguntas.style.display = 'none';
+      msgResumida.style.display = 'block';
+    } else {
+      bComp.style.display = 'flex';
+      bRes.style.display = 'none';
+      perguntas.style.display = 'block';
+      msgResumida.style.display = 'none';
+    }
+
+    // veículos do Locavia
+    const tbody = document.getElementById('tabela-veiculos');
+    tbody.innerHTML = '';
+    dados.veiculos.forEach(v => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${v.placa}</td><td>${v.modelo}</td><td>${v.parada}</td>
+        <td><select><option>Orçamento</option><option>Aprovação</option><option>Em serviço</option><option>Aguardando peças</option><option>Fora de serviço</option></select></td>
+        <td><input type="text" placeholder="Comentário"></td>`;
+      tbody.appendChild(tr);
+    });
+  });
+
+  // link "fazer completa mesmo assim"
+  document.getElementById('forcar-completa').addEventListener('click', () => {
+    document.getElementById('banner-completa').style.display = 'none';
+    document.getElementById('banner-resumida').style.display = 'none';
+    document.getElementById('perguntas-auditoria').style.display = 'block';
+    document.getElementById('msg-resumida').style.display = 'none';
+  });
+
+  // sim/não das perguntas de auditoria
+  document.querySelectorAll('.audit-q').forEach(q => {
+    const simBtn = q.querySelector('.sel-sim');
+    const naoBtn = q.querySelector('.sel-nao');
+    const ta = q.querySelector('textarea');
+    simBtn.addEventListener('click', () => { simBtn.classList.add('active'); naoBtn.classList.remove('active'); ta.classList.remove('show'); });
+    naoBtn.addEventListener('click', () => { naoBtn.classList.add('active'); simBtn.classList.remove('active'); ta.classList.add('show'); });
+  });
+
+  // upload de fotos (mock, só mostra miniatura com o nome)
+  const uploadBox = document.getElementById('upload-box');
+  const inputFotos = document.getElementById('input-fotos');
+  uploadBox.addEventListener('click', () => inputFotos.click());
+  inputFotos.addEventListener('change', () => {
+    const thumbs = document.getElementById('thumbs');
+    Array.from(inputFotos.files).forEach(f => {
+      const div = document.createElement('div');
+      div.className = 'thumb';
+      div.innerHTML = `${f.name.slice(0,14)} <button>×</button>`;
+      div.querySelector('button').addEventListener('click', () => div.remove());
+      thumbs.appendChild(div);
+    });
+  });
+
+  function buildReview() {
+    const fields = [
+      ['Oficina', document.getElementById('nome-oficina').value || '—'],
+      ['CNPJ', document.getElementById('cnpj').value || '—'],
+      ['Tipo', document.getElementById('tipo-oficina').value],
+      ['Motivo', document.getElementById('motivo').value],
+      ['Data e hora', document.getElementById('data-hora').value],
+      ['Fotos anexadas', document.querySelectorAll('.thumb').length],
+      ['Veículos', document.querySelectorAll('#tabela-veiculos tr').length],
+    ];
+    const ul = document.getElementById('review-list');
+    ul.innerHTML = fields.map(([k,v]) => `<li><span class="k">${k}</span><span class="v">${v}</span></li>`).join('');
+  }
+
+  renderStepper();
+</script>
+
+</body>
+</html>
