@@ -145,7 +145,7 @@
       <a href="#" class="nav-item disabled"><i class="ti ti-report"></i>Relatórios</a>
     </nav>
     <div class="sidebar-footer">
-      <span>Olá, [Nome do gerente]</span>
+      <span id="user-greeting">Olá, [Nome do gerente]</span>
       <a href="login.html">Sair</a>
     </div>
   </div>
@@ -311,5 +311,18 @@
     });
   </script>
 
+
+  <script>
+    // Protótipo — identifica o perfil pela URL (?perfil=coordenador), simulando o que
+    // no sistema real viria do login. Ajusta a saudação; o real virá do backend.
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const perfil = params.get('perfil') || 'gerente';
+      const label = perfil === 'coordenador' ? 'Coordenador(a)' : 'Gerente';
+      const el = document.getElementById('user-greeting');
+      if (el) el.textContent = `Olá, [Nome] · ${label}`;
+      window.__perfilAtual = perfil;
+    })();
+  </script>
 </body>
 </html>
